@@ -14,4 +14,9 @@ categories: 阅读源码
 {% asset_img 详细功能.png 详细功能 %}
 
 ### 主要流程
+这部分直接看源码即可, 过程比较清晰, 就是状态机转化状态
+
 ### 整体分析
+react-transition-group使用状态机维护状态, 将in属性的变化映射成各个状态, 通过state暴露给子组件. 源码中关于闭包的使用看起来比较优雅, 值得学习. TransitionGroup使用的childMapping看起来比较难理解.
+
+源码的注释在[github](https://github.com/Zack-Bee/read-react-transition-group)
