@@ -8,15 +8,24 @@ categories: 教程
 ### 基本功能
 可以选择本地的以.docx为结尾的题库, 选择后点击相应的条目, 即可进行测试,
 管理员可以选择本地文件后上传到服务器, 并对服务器上的题目进行管理.
-{% asset_img img/1.jpg This is an example image %}
-{% asset_img img/2.jpg This is an example image %}
-{% asset_img img/3.jpg This is an example image %}
-{% asset_img img/4.jpg This is an example image %}
-{% asset_img img/5.jpg This is an example image %}
-{% asset_img img/6.jpg This is an example image %}
-{% asset_img img/7.jpg This is an example image %}
-{% asset_img img/8.jpg This is an example image %}
-{% asset_img img/9.jpg This is an example image %}
+
+{% asset_img 1.jpg This is an example image %}
+
+{% asset_img 2.jpg This is an example image %}
+
+{% asset_img 3.jpg This is an example image %}
+
+{% asset_img 4.jpg This is an example image %}
+
+{% asset_img 5.jpg This is an example image %}
+
+{% asset_img 6.jpg This is an example image %}
+
+{% asset_img 7.jpg This is an example image %}
+
+{% asset_img 8.jpg This is an example image %}
+
+{% asset_img 9.jpg This is an example image %}
 
 ### 网址
 [EXAM](https://exam.zackbee.cn)
