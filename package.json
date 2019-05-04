@@ -19,5 +19,14 @@
     "hexo-renderer-marked": "^0.3.0",
     "hexo-renderer-stylus": "^0.3.1",
     "hexo-server": "^0.2.0"
+  },
+  "scripts": {
+    "// 懒得每次都查hexo文档, 写成scripts好了": "",
+    "// 创建新的博客, 使用npm run new -- blogName": "",
+    "new": "hexo n",
+    "// 生成静态博客部署到仓库, 使用npm run deploy": "",
+    "deploy": "hexo d",
+    "// 启动本地服务器, 使用npm run server": "",
+    "server": "hexo s"
   }
 }
