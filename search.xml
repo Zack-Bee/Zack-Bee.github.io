@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search> 
+  
+    
+    <entry>
+      <title>读读redux源码，写写中间件</title>
+      <link href="/2019/08/17/review-redux-and-write-middleware/"/>
+      <url>/2019/08/17/review-redux-and-write-middleware/</url>
+      <content type="html"><![CDATA[<p>上一次阅读redux源码还是一年前，那时对redux只是浅尝则止，时间过得很快，转眼来到墨刀已经一个多月，在这里学习公司的代码让我对redux的使用更加深入，所以今天我再次阅读redux的源码。<br>上次主要看的是redux的组织结构以及实现方式，这一次主要看的是实现细节，如何使用以及编写middleware</p><h4 id="redux版本-4-0-0"><a href="#redux版本-4-0-0" class="headerlink" title="redux版本: 4.0.0"></a>redux版本: 4.0.0</h4><h3 id="实现细节"><a href="#实现细节" class="headerlink" title="实现细节"></a>实现细节</h3><pre><code>function compose(...funcs) {  if (funcs.length === 0) {    return arg =&gt; arg  }  if (funcs.length === 1) {    return funcs[0]  }  return funcs.reduce((a, b) =&gt; (...args) =&gt; a(b(...args)))}</code></pre><p>在applyMiidleWare()中middleware({ dispatch, getState })将store =&gt; next =&gt; action =&gt; {}形式的中间件通过闭包获得对dispatch, getState的访问，再由compose得到a(b(c(d(store.dispatch))))最终的函数，这种reduce的使用方式值得学习。</p><pre><code>let dispatch = () =&gt; {  throw new Error(    `Dispatching while constructing your middleware is not allowed. ` +      `Other middleware would not be applied to this dispatch.`  )}</code></pre><p>这处的代码当时看的时候有些不理解，不明白作者为何煞费苦心地多写这些代码，今天又看了下感觉是为了避免使用者滥用代码，故抛出错误。当时自己谨遵文档，觉得源码中这样做多此一举，如今看来是为了照顾忘了文档的开发者。明白了在基础库的编写时，不能指望所有人都按照你的意愿来使用代码，你需要进行适当的检测来提醒开发者。</p><h3 id="写写中间件"><a href="#写写中间件" class="headerlink" title="写写中间件"></a>写写中间件</h3><p>利用中间件来解决reducer数据依赖复杂的问题是在墨刀刚学到的。</p><h4 id="开始的我们"><a href="#开始的我们" class="headerlink" title="开始的我们"></a>开始的我们</h4><p>以前刚开始接触redux的时候，为了图方便，会在局部的reducer里读取store上整体的state，如以下代码<br><pre><code>const statusReducer = (state = initialState, { type, payload }) =&gt; {  switch (type) {    case &#39;set:status:count&#39;:      return {        ...state.status,        count: state.count + payload.count      }    default:      return state.status  }}const countReducer = () =&gt; ({}) &#x2F;&#x2F; some easy reducerconst reducer = (state, action) =&gt; ({  status: statusReducer(state, action),  count: countReducer(state.count, action)})</code></pre></p><p>这样的reducer works well，但是为了读取到state，reducer的逻辑比较复杂，维护起来比较脏，我们可以写一个中间件，来处理对state的数据依赖。</p><h3 id="来一个中间件"><a href="#来一个中间件" class="headerlink" title="来一个中间件"></a>来一个中间件</h3><pre><code>const captureFunctionMiddleWare = ({ getState, dispatch }) =&gt; next =&gt; action =&gt; {  if (typeof action === &#39;function&#39;) {    return action(getState, dispatch, next)  }  next(action)}const setCount = count =&gt; ({ getState, dispatch }) =&gt; {  const {    count: stateCount  } = getState()  dispatch({    type: &#39;set:status&#39;,    payload: {      count: count + stateCount    }  })}const statusReducer = (state = initialState, { type, payload }) =&gt; {  switch (type) {    case &#39;set:status:count&#39;:      return {        ...state,        count: payload.count      }    default:      return state  }}const reducer = combineReducers({  status: statusReducer,  count: countReducer})</code></pre><p>我们使用captureFunctionMiddleware来对函数action进行捕获，给其传递(getState, dispatch, next)，这样写利用中间件获取到整体的state，不需要在reducer中进行hack，reducer会干净很多。</p><h3 id="更进一步"><a href="#更进一步" class="headerlink" title="更进一步"></a>更进一步</h3><p>使用上述的中间件确实解决了reducer很脏的问题，但是问题来了，action creator现在变得比较复杂了，能不能把逻辑拆出来呢，我们再写一个trap middleware creator。<br><pre><code>const createTrapMiddleware = (trapStartString) =&gt; {  const map = {}  const setTrap = (key, trapFunc) =&gt; {    if (typeof trapFunc !== &#39;function&#39;) {      throw new Error(&#39;hahahha&#39;)    }    map[key] = trapFunc  }  const onAction = ({ getState, dispatch }, payload) =&gt; {    const trapFunc = map[type]    if (typeof func !== &#39;function&#39;) {      throw new Error(&#39;hahahha&#39;)    }    return trapFunc(payload)  }  const trapMiddleware = ({ getState, dispatch }) =&gt; next =&gt; action =&gt; {    const {      type,      payload    } = action    if (type.startsWith(trapStartString)) {        const result = onAction({ getState, dispatch }, payload)        (result === true) || next(action)    } else {      next(action)    }  }  return {    middleware: trapMiddleware,    setTrap,  }}const {  setTrap,  middleware} = createTrapMiddleware(&#39;zackbee:&#39;)setTrap(&#39;zackbee:compute:status:count&#39;, ({ getState, dispatch}, payload) =&gt; {  const {    count  } = getState  dispatch({    type: &#39;set:status:count&#39;,    payload: count + payload.count  })  return true &#x2F;&#x2F; 阻止后续middleware处理})const mapDispatchToProps = dispatch =&gt; ({  computeCount: (count) =&gt; {    dispatch({      type: &#39;zackbee:compute:status:count&#39;,      payload: {        count: cuont      }    })  }})</code></pre><br>使用trapMiddleware捕获相应的action.type，reducer与之前的一致，但是action creator中没有太多的逻辑，将逻辑集中到trap map统一处理，能够使reducer以及action creator比较干净。</p><p>关于react以及redux还有很多要学习的地方，这次对源码的注释在<a href="https://github.com/Zack-Bee/read-redux" target="_blank" rel="noopener">github</a><br>学习了一下dr前辈的redux-entry中间件<a href="https://github.com/ThatBean/redux-entry" target="_blank" rel="noopener">redux-entry</a></p>]]></content>
+      
+      <categories>
+          
+          <category> 阅读源码 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 阅读源码 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
+      <title>初读《构建之法》</title>
+      <link href="/2019/05/03/%E5%88%9D%E8%AF%BB%E6%9E%84%E5%BB%BA%E4%B9%8B%E6%B3%95/"/>
+      <url>/2019/05/03/%E5%88%9D%E8%AF%BB%E6%9E%84%E5%BB%BA%E4%B9%8B%E6%B3%95/</url>
+      <content type="html"><![CDATA[<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>三月从图书馆借来《构建之法》这本书打算用来自学软件工程，快速地浏览了一遍，心中有浅显的感悟，却一直没空组织成文，今天终于偷得半日闲，将所思所想一一写下。</p><h2 id="对于软件开发的思考"><a href="#对于软件开发的思考" class="headerlink" title="对于软件开发的思考"></a>对于软件开发的思考</h2><p>我在书中看到了许许多多基于方法论的关于软件开发流程的方法，它们或激进或保守，或新奇或经典。我感觉这些方法会因为团队成员、软件规模、用户需求等因素的变化而选择其中的一种或多种杂揉，软件工程没有银弹，没有switch case这样能够对号入座的方法，更多的是对于软件开发的方方面面进行权衡后的决断。然而我懒得记各种方法，所以我归纳出以下几个核心思想，希望借此能够构建出高质量的软件。</p><h3 id="团队-gt-个人"><a href="#团队-gt-个人" class="headerlink" title="团队&gt;个人"></a>团队&gt;个人</h3><p>无论是代码规范，还是设计规范以及其他的各种规范，模式，都是为了能够让团队发挥出最大的效果，我们大多数都是平凡的个体，不是超级英雄，单打独斗的力量十分有限。在一个团队中，为了整个团队能够更好地完成任务，需要明白团队大于个人，需要以整个团队的利益为先，积极与成员沟通。</p><h3 id="产品-gt-项目"><a href="#产品-gt-项目" class="headerlink" title="产品&gt;项目"></a>产品&gt;项目</h3><p>如果你的项目不需要用户，那么这一条可以忽略不计。但是如果你的产品需要得到用户的满意的话，你必须得明白，产品是大于项目的。产品是需要考量目标用户、用户需求等等大量条件的，不是为了炫技的玩具。产品是用户驱动开发(UDD? :P)。</p><h3 id="自动-gt-手动"><a href="#自动-gt-手动" class="headerlink" title="自动&gt;手动"></a>自动&gt;手动</h3><p>在软件开发的大多数情况下，自动化的流程，各种测试等等，都是用来保障软件质量以及减少后期维护负担的关键工具，从长远的角度来讲(当然可能很多人写的东西不需要长远)，把任务交给机器，比自己动手要靠谱、轻松得多。</p><h3 id="设计-gt-编码"><a href="#设计-gt-编码" class="headerlink" title="设计&gt;编码"></a>设计&gt;编码</h3><p>我刚开始学习写程序的时候，很多人都喜欢在键盘上噼里啪啦一顿乱敲来显示自己非常厉害，但其实最后除了制造噪音也没什么作用。写得多了就会意识到，很多时候好的设计比快速地编码要更加重要，在开发的过程中要多动脑子而不是多动手指，在开发之前也要做好设计的工作。(当然一直设计而不去编码也是不可取的)</p><h2 id="对于产品的思考"><a href="#对于产品的思考" class="headerlink" title="对于产品的思考"></a>对于产品的思考</h2><p>看这本书的本意是学习软件工程，但是产品相关的章节(确切地说是需求分析)却吸引了我。其中的NABCD模型我觉得很棒。</p><h3 id="8-1-软件需求-8-1为书中章节号"><a href="#8-1-软件需求-8-1为书中章节号" class="headerlink" title="8.1 软件需求(8.1为书中章节号)"></a>8.1 软件需求(8.1为书中章节号)</h3><p>找到需求的步骤</p><h4 id="获取和引导需求"><a href="#获取和引导需求" class="headerlink" title="获取和引导需求"></a>获取和引导需求</h4><p>了解与挖掘软件的利益相关者对于软件的需求, 可以采用调查、逐步引导、推测等方式。<br><strong>软件企业=软件+商业模式</strong></p><h4 id="分析与定义需求"><a href="#分析与定义需求" class="headerlink" title="分析与定义需求"></a>分析与定义需求</h4><p>量化需求，分析需求</p><h4 id="验证需求"><a href="#验证需求" class="headerlink" title="验证需求"></a>验证需求</h4><p>与利益相关者沟通进行验证</p><h4 id="管理需求"><a href="#管理需求" class="headerlink" title="管理需求"></a>管理需求</h4><p>在业务流程中对需求进行审核与调整</p><ol><li>对产品功能性的需求：产品实现的功能</li><li>对产品开发过程的需求：开发流程满足某些约束条件</li><li>非功能性需求：服务质量需求</li><li>综合需求：不仅仅是软件需求</li></ol><h3 id="8-2-软件产品的利益相关者"><a href="#8-2-软件产品的利益相关者" class="headerlink" title="8.2 软件产品的利益相关者"></a>8.2 软件产品的利益相关者</h3><ol><li>用户：直接使用软件系统的人</li><li>客户：购买软件的人或接收软件的人</li><li>市场分析者：代表“典型用户”的需求</li><li>监管机构：软件需符合行业与政策的规定</li><li>系统/应用集成商：给客户提供咨询、集成、服务等工作</li><li>软件团队</li><li>软件工程师</li></ol><h3 id="8-3-获取用户需求-用户调研"><a href="#8-3-获取用户需求-用户调研" class="headerlink" title="8.3 获取用户需求-用户调研"></a>8.3 获取用户需求-用户调研</h3><h3 id="8-4-竞争性需求分析"><a href="#8-4-竞争性需求分析" class="headerlink" title="8.4 竞争性需求分析"></a>8.4 竞争性需求分析</h3><h4 id="N-Need"><a href="#N-Need" class="headerlink" title="N(Need)"></a>N(Need)</h4><p>了解用户需求：</p><ol><li>找到用户使用的软件满足了怎样的需求，对不满意的地方我们能否做得更好。</li><li>找到“不消费的用户”，为什么他们不使用某个软件</li></ol><h4 id="A-Approach"><a href="#A-Approach" class="headerlink" title="A(Approach)"></a>A(Approach)</h4><p><strong>独特的招数</strong>，无论是技术还是商业模式</p><h4 id="B-Benefit"><a href="#B-Benefit" class="headerlink" title="B(Benefit)"></a>B(Benefit)</h4><p>新的产品能给用户带来什么好处，迁移成本有多大。</p><h4 id="C-Competitors"><a href="#C-Competitors" class="headerlink" title="C(Competitors)"></a>C(Competitors)</h4><p>明白竞争产品的优势与劣势</p><h4 id="D-Delivery"><a href="#D-Delivery" class="headerlink" title="D(Delivery)"></a>D(Delivery)</h4><p>发布推广</p><h3 id="8-5-功能的定位与优先级"><a href="#8-5-功能的定位与优先级" class="headerlink" title="8.5 功能的定位与优先级"></a>8.5 功能的定位与优先级</h3><ul><li>杀手功能</li><li>外围功能</li><li>必要需求</li><li>辅助需求</li></ul>]]></content>
+      
+      <categories>
+          
+          <category> 阅读 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 阅读 思考 产品 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
+      <title>使用ngxin-rtmp搭建直播服务</title>
+      <link href="/2018/10/02/%E4%BD%BF%E7%94%A8ngxin-rtmp%E6%90%AD%E5%BB%BA%E7%9B%B4%E6%92%AD%E6%9C%8D%E5%8A%A1/"/>
+      <url>/2018/10/02/%E4%BD%BF%E7%94%A8ngxin-rtmp%E6%90%AD%E5%BB%BA%E7%9B%B4%E6%92%AD%E6%9C%8D%E5%8A%A1/</url>
+      <content type="html"><![CDATA[<h3 id="环境"><a href="#环境" class="headerlink" title="环境:"></a>环境:</h3><p>os: Debian(nginx与nginx-rtmp模块支持的系统都行, 虽然有windows的版本, 但是最好在windows环境下使用wsl虚拟机)</p><p>nginx版本: 1.15.3(nginx与nginx-rtmp都是选的比较新的, 老旧版本编译安装很可能出错)</p><p>nginx-rtmp版本: 1.2.1</p><p>gcc版本: 8.2.0</p><h3 id="编译安装"><a href="#编译安装" class="headerlink" title="编译安装"></a>编译安装</h3><p>假定nginx目录在/usr/local/src/nginx,<br>nginx-rtmp目录在user/local/src/nginx-rtmp,<br>目标安装目录在/user/local/ngxin, 则使用的命令参数如下</p><pre><code>cd /usr/local/src/nginx./configure --prefix=/usr/local/nginx --with-ipv6 --add-module=/usr/local/src/nginx-rtmp --without-http_gzip_module --without-http_rewrite_modulemakemake install// 在`make`与`make install`的过程中, 很容易出错, 通常是编译错误, 需要在switch中的case语句前加上/*fall thru*///详情到如下地址查看https://developers.redhat.com/blog/2017/03/10/wimplicit-fallthrough-in-gcc-7/// 安装时也会出现缺少open-ssl库的问题, 到stackoverflow上搜索即可.</code></pre><h3 id="更改ngxin-conf"><a href="#更改ngxin-conf" class="headerlink" title="更改ngxin-conf"></a>更改ngxin-conf</h3><p>使用如下将nginx.conf修改成如下内容<br><pre><code>user www-data;# worker_processes auto;# pid &#x2F;run&#x2F;nginx.pid;# include &#x2F;etc&#x2F;nginx&#x2F;modules-enabled&#x2F;*.conf;events {        worker_connections 1024;}rtmp {    server {        listen 1935;        chunk_size 4000;        # 用于直播推流的认证        application live {            live on;            publish_notify on;            on_publish http:&#x2F;&#x2F;localhost:3000&#x2F;authorize;            hls on;            hls_path &#x2F;usr&#x2F;local&#x2F;live&#x2F;hls;            on_publish_done http:&#x2F;&#x2F;localhost:3000&#x2F;liveDone;            hls_playlist_length 15s;        }        application vod {            play &#x2F;var&#x2F;flvs;        }    }}# HTTP can be used for accessing RTMP statshttp {    server {        listen      8080;        location &#x2F;stat.xsl {            # XML stylesheet to view RTMP stats.            # Copy stat.xsl wherever you want            # and put the full directory path here            root &#x2F;usr&#x2F;local&#x2F;nginx&#x2F;sbin&#x2F;;        }        #在服务器生成hls文件        location &#x2F;hls {            # Serve HLS fragments            types {                application&#x2F;vnd.apple.mpegurl m3u8;                video&#x2F;mp2t ts;            }            root &#x2F;usr&#x2F;local&#x2F;hdtv;            add_header Cache-Control no-cache;        }        location &#x2F;dash {            # Serve DASH fragments            root &#x2F;tmp;            add_header Cache-Control no-cache;        }    }}</code></pre></p><h3 id="直播推流"><a href="#直播推流" class="headerlink" title="直播推流"></a>直播推流</h3><p>将nginx.conf中的on_publish那一行删掉, 启动nginx即可进行推流, 在配置文件中, listen后面为1935, application后面为live, 那么推流地址应该是rtmp://localhost:1935/live/:name, name为你自定义的参数, 在rtmp推流中, 该参数是必须的.</p><p>如果想要控制直播推流, 比如加上推流认证, 那么在nginx.conf中的on_publish后面填上你用来处理的推流的url, 我的conf设置里on_publish后面为<a href="http://localhost:3000/authorize" target="_blank" rel="noopener">http://localhost:3000/authorize</a>, 当产生rtmp推流请求时, nginx-rtmp模块会向该url发送Post请求(如果希望nginx-rtmp向该url发送Get请求则需要在nginx.conf中配置, 请自行查阅), 如果该url的处理程序返回200, 则nginx-rtmp允许推流, 返回4开头或者5开头分状态码则会终止此次推流.</p><p>假如推流地址为rtmp://localhost:1935/live/test?pass=123456, 那么控制直播推流收到的请求会有{name: “test”, pass: “123456”}这样的数据, 当然还会有其他关于推流信息的数据, 请自行打印查看.</p><p>向rtmp://localhost:1935/live/test?pass=123456, 播放地址为rtmp://localhost:1935/live/test, 使用rtmp协议直接播放的优点是延迟低, 占用内存小, 缺点是在浏览器上兼容性不好, 只能使用flash播放. 在ngxin.conf中的<code>hls on;`</code>hls_path /usr/local/live/hls;`这两行配置, 可以在hls_path指定的目录下生成用于hls协议的.ts以及.m3u8文件, 使用hls协议的优点是兼容性较好, 在safari中可以直接播放, 其他浏览器可以使用http获取视频流, 然后进行处理后喂给video元素, 基本上满足各个平台的浏览器播放. 缺点也很明显, 直播延迟高, 生成.ts以及.m3u8占用内存.</p><h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>你可以使用<a href="https://github.com/Zack-Bee/hdtv" target="_blank" rel="noopener">hdtv</a>以及<a href="https://github.com/Zack-Bee/hdtv-admin" target="_blank" rel="noopener">hdtv-admin</a>来对视频进行播放以及推流认证, 账户管理等功能. hdtv将来会考虑自己实现flv的直播来降低直播产生的延迟, 同时加入弹幕等功能.</p>]]></content>
+      
+      <categories>
+          
+          <category> 教程 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 教程 直播 hdtv </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
+      <title>一块月饼引发的思考</title>
+      <link href="/2018/09/24/%E4%B8%80%E5%9D%97%E6%9C%88%E9%A5%BC%E5%BC%95%E5%8F%91%E7%9A%84%E6%80%9D%E8%80%83/"/>
+      <url>/2018/09/24/%E4%B8%80%E5%9D%97%E6%9C%88%E9%A5%BC%E5%BC%95%E5%8F%91%E7%9A%84%E6%80%9D%E8%80%83/</url>
+      <content type="html"><![CDATA[<p>今天是中秋节，早餐吃了室友给的一块蛋黄莲蓉月饼，吃了四分之三就感觉吃不下了，不禁让我十分意外，我记得以前我是很喜欢吃这种月饼的，初中亲戚送了一盒，那是我第一次吃这种月饼，香甜细腻的莲蓉，泛着油光的蛋黄，都让我觉得惊艳喜欢。 但是今天，蛋黄还是那个蛋黄，莲蓉还是那个莲蓉，月饼也还是那个月饼，但是我却没那么喜欢了。</p><p>我又想起前几天和朋友谈论到以前看的小说，说到《斗罗大陆》和《斗破苍穹》，觉得那个时候的兴奋与惊艳之感是由于当时看的小说太少，没见识。小说也还是那些小说，套路也还是那些套路，但是现在也不再喜欢。我又记起看过的毕淑敏的散文，它们确实很温暖，但是现在却不能让我得到启迪与顿悟。我原本打算把这些归结于年少无知，就像我反思之前犯的错误也是因为年少无知。后来想了想，其实无知不一定是因为年少，年少也不一定是无知的理由，无知就是因为无知。</p><p>那个时候的我们涉世未深，见过的世面太少，会因为第一次吃到的牛排而感到幸福满足，会觉得这世上的粽子应该都是甜的吧，会觉得天下最好吃的月饼是蛋黄莲蓉，最好吃的包子一定是来自靠近初中的那家天津包子铺。包子铺的老板娘在我领中考成绩单那天问我考得怎么样，我拿着四个豆沙包子笑着说还不错，然后转身走回了家。我还记得她笑得时候，脸上的褶皱像包子上褶皱一样，笑容比豆沙还要甜。以前见过的人很少，所以我们对很多人都印象深刻。你会记得暴雨天背着你趟过水洼的少年，你也会记得帮你抄过入团申请书的少女，你会记得因为你的骄傲而批评过你的班主任，你也会记得那个开朗明亮的女同桌。那个时候的男孩们见过的女孩太少，可能因为她们活泼可爱的性格而觉得喜欢，可能因为她们美丽动人的外表而觉得喜欢，也可能因为她们在路上不小心踩了你的鞋而觉得喜欢，就是这么莫名其妙。那个时候的男孩们，在青春期荷尔蒙的刺激下开始带着好奇与新鲜感走向女孩，将自己代入那美好的故事，以为自己是故事的男主角，而路上的任何一个路人乙，都有可能是自己的真命天女。</p><p>后来的我吃过了很多次牛排，知道这个世界上除了甜粽子还有咸味的粽子，也会因为吃过了太多次蛋黄莲蓉月饼而觉得发腻，原来最好吃的包子不一定是街头那一家。我也见过很多人，在熙熙攘攘的人群中与他们擦肩而过，在人生的路途中先后奔向天南海北。我再很难因为女孩性格活泼可爱而心动，你看，小红很活泼可爱，小丽也很活泼可爱，这世上活泼可爱的那么多，为什么一定就是你的路人乙呢。后来我再想想，我们那个时候的心跳加速，那个时候的寝食难安，是不是真的因为是心动呢，还是因为见过的人太少。我不清楚，也还没想明白，想必在中秋节这一天也想不明白了。那个时候的牛排、蛋黄莲蓉月饼、包子，是不是真的那么好吃呢，我也不清楚。而我最近这几天怀念的武汉街头的梅花糕，我也无从得知是否真的像我第一次吃的那样惊艳，因为我再也没有遇到过。</p><p>我们慢慢地成长，虽然不算见多识广，但是比起最初的自己看的人和事物都多得多了。我虽然常常在反思，嘲笑以前的自己，对以前做的蠢事而哑然失笑，但是我不会去抨击或是嘲笑以前我接触的事物。你看唐家三少和天蚕土豆写的小说虽然都是那样的套路，但是《斗罗大陆》和《斗破苍穹》对于当时第一次接触的我们，也算是书海中的珍宝。你看当时在普通餐厅吃的牛排好歹也在很久的一段时间里是我幸福的源泉。你看毕淑敏写的散文，虽然现在再看不会那么喜欢了，但是当时确实一直在指引我前行，是那样的温暖。我们可能小时候一直会喜欢吃鸡蛋炒番茄，但是某一天我们突然不喜欢了，不喜欢了就是不喜欢了，你没错，鸡蛋炒番茄也没错。</p><p>可能以后我反思自己的时候会觉得今天写下的这段文字幼稚可笑，但是这就是我此时此刻因为一块月饼而引发的思考，它真实，有力地描述了一个大三老狗在中秋节这天的所思所想。</p>]]></content>
+      
+      <categories>
+          
+          <category> 胡思乱想 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 胡思乱想 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
+      <title>阅读react-transition-group源码</title>
+      <link href="/2018/09/03/read-react-transition-group/"/>
+      <url>/2018/09/03/read-react-transition-group/</url>
+      <content type="html"><![CDATA[<h4 id="react-transition-group版本-2-4-0"><a href="#react-transition-group版本-2-4-0" class="headerlink" title="react-transition-group版本: 2.4.0"></a>react-transition-group版本: 2.4.0</h4><h3 id="react-transition-group主要代码组成"><a href="#react-transition-group主要代码组成" class="headerlink" title="react-transition-group主要代码组成"></a>react-transition-group主要代码组成</h3><img src="/2018/09/03/read-react-transition-group/代码组成.png" title="react-transition-group的主要代码组成"><h3 id="详细功能"><a href="#详细功能" class="headerlink" title="详细功能"></a>详细功能</h3><img src="/2018/09/03/read-react-transition-group/详细功能.png" title="详细功能"><h3 id="主要流程"><a href="#主要流程" class="headerlink" title="主要流程"></a>主要流程</h3><p>这部分直接看源码即可, 过程比较清晰, 就是状态机转化状态</p><h3 id="整体分析"><a href="#整体分析" class="headerlink" title="整体分析"></a>整体分析</h3><p>react-transition-group使用状态机维护状态, 将in属性的变化映射成各个状态, 通过state暴露给子组件. 源码中关于闭包的使用看起来比较优雅, 值得学习. TransitionGroup使用的childMapping看起来比较难理解.</p><p>源码的注释在<a href="https://github.com/Zack-Bee/read-react-transition-group" target="_blank" rel="noopener">github</a></p>]]></content>
+      
+      <categories>
+          
+          <category> 阅读源码 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 阅读源码 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
+      <title>阅读redux源码</title>
+      <link href="/2018/07/27/read-redux/"/>
+      <url>/2018/07/27/read-redux/</url>
+      <content type="html"><![CDATA[<h4 id="redux版本-4-0-0"><a href="#redux版本-4-0-0" class="headerlink" title="redux版本: 4.0.0"></a>redux版本: 4.0.0</h4><h3 id="redux的主要代码组成"><a href="#redux的主要代码组成" class="headerlink" title="redux的主要代码组成"></a>redux的主要代码组成</h3><img src="/2018/07/27/read-redux/代码组成.png" title="redux的主要代码组成"><h3 id="详细功能"><a href="#详细功能" class="headerlink" title="详细功能"></a>详细功能</h3><img src="/2018/07/27/read-redux/详细功能.png" title="详细功能"><h3 id="主要流程"><a href="#主要流程" class="headerlink" title="主要流程"></a>主要流程</h3><img src="/2018/07/27/read-redux/主要流程.png" title="主要流程"><h3 id="整体分析"><a href="#整体分析" class="headerlink" title="整体分析"></a>整体分析</h3><p>redux的代码通熟易懂, 有很好的可读性. redux作为一个管理数据的工具, 使用createStore函数, 利用闭包维护着状态树(state tree). 在内部维护的listeners队列每次调用dispatch时起到了类似于事件监听的作用(我原以为是使用了自定义事件来完成这个部分, 看了源码之后觉得很巧妙). 将所有的redux相关的状态利用闭包在内部维护, 避免了污染全局变量. 在compose部分对于Array.prototype.reduce的使用让我发现了reduce的一种有效的用途, 也算是开阔了一下眼界.</p><p>源代码的注释在<a href="https://github.com/Zack-Bee/read-redux/tree/3d41a5f60bb1fe219fe957cafa34de175c341ee6" target="_blank" rel="noopener">github</a>上.<br>最新注释<a href="https://github.com/Zack-Bee/read-redux" target="_blank" rel="noopener">github</a></p>]]></content>
+      
+      <categories>
+          
+          <category> 阅读源码 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 阅读源码 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
+      <title>微信小程序开发以及微信小程序大赛总结</title>
+      <link href="/2018/06/12/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%BC%80%E5%8F%91%E4%BB%A5%E5%8F%8A%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%A4%A7%E8%B5%9B%E6%80%BB%E7%BB%93/"/>
+      <url>/2018/06/12/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%BC%80%E5%8F%91%E4%BB%A5%E5%8F%8A%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%A4%A7%E8%B5%9B%E6%80%BB%E7%BB%93/</url>
+      <content type="html"><![CDATA[<h2 id="微信小程序开发"><a href="#微信小程序开发" class="headerlink" title="微信小程序开发"></a>微信小程序开发</h2><h3 id="关于微信小程序"><a href="#关于微信小程序" class="headerlink" title="关于微信小程序"></a>关于微信小程序</h3><p>在开发微信小程序之前, 把文档通读了一遍, 看了下网上关于微信小程序架构的分析.从微信小程序为移动端的各种事件的优化, 基础组件的非常实用属性, wxss中的rpx属性, 小程序的框架等等, 能够看得出来微信团队为了让微信小程序开发(移动端的开发)变得容易做出的一些努力, 但是对于熟悉了web前端开发良好的生态的开发者来说, 微信小程序却让人有些难过, 原本在web开发中的优秀的库都无法使用, 小程序开发的生态暂时非常一般. 尽管有wepy(使用过, 有坑), mpvue(还没使用过), taro(做完比赛之后才发现这个库, 用了比较喜欢的react风格), 但表现得仍然不尽人意, 希望微信小程序越来越好吧.</p><h4 id="开发微信小程序中需要注意的地方"><a href="#开发微信小程序中需要注意的地方" class="headerlink" title="开发微信小程序中需要注意的地方"></a>开发微信小程序中需要注意的地方</h4><ol><li><p>微信开发者工具在win10上, map组件中的controller点击之后无效. 当时出现这个问题找了很久bug, 从代码到wepy逐渐排查, 最后发现竟然是开发者工具在win10的问题. 所以在开发微信小程序的时候, 如果你确认你的代码没问题, 在开发者工具上跑不了的时候, 试试手机调试.</p></li><li><p>使用scroll-view组件的时候, 必须得给他指定height, scrolltoupper事件和scrolltolower事件才能生效.</p></li><li><p>有map组件存在的页面, 很多css属性是不能生效的, 比如box-shadow. 那么如果想要做成滴滴打车小程序那样的阴影效果该怎么办呢? 使用cover-view和cover-image加载图片来完成hack. 同时需要注意的是, <strong>cover-image不在cover-view里面也是无法生效的</strong></p></li><li><p>使用wx.getStorageSync借口获得本地存储的数据, 如果数据在本地中没有, 返回的不是undefined, 而是””, 空字符串.</p></li></ol><h3 id="关于wepy"><a href="#关于wepy" class="headerlink" title="关于wepy"></a>关于wepy</h3><p>在编写代码的时候进行技术选型, 考虑了wepy和mpvue, 但是因为mpvue是刚开源不久的项目, issue里面的讨论也没有wepy多, 就选择了看起来更加成熟的wepy.</p><p>在写wepy的过程中, 也能够看出来wepy做的努力, 感觉是参考了vue和react特性, 从中吸取了两者的优点吧.(写着写着就能感受到react的感觉, 之前没有接触vue, 但是使用wepy的过程中把vue的文档看完了, 可能是情人眼里出西施吧, 越发觉得react的文档组织得比vue好), 但是使用wepy还是有一些需要注意的地方的(可能是受到了微信小程序机制的限制), 以下我将详细说明.</p><h4 id="wepy中需要注意的地方-坑"><a href="#wepy中需要注意的地方-坑" class="headerlink" title="wepy中需要注意的地方(坑)"></a>wepy中需要注意的地方(坑)</h4><ol><li>wepy对于组件的支持差强人意.<br>当你多重嵌套定义组件时, 数据向下层流动很容易出问题.<br>在下面的示例代码中, child组件在onLoad触发的时候是无法访问到someData的数据的, 这不是最大的问题, 最大的问题是, 从child到descendant, 使用child的props向下传递数据是行不通的, 数据最多从一个组件的data通过子组件的props流向子组件, 无法再从子组件流向子孙组件. wepy这样的行为, 就限制了组件的重复使用, 因为数据流动最多一层(wepy支持使用redux来管理数据, 技术选型的时候, 考虑到队员没有接触过react, vue等框架, 学习wepy本身的学习成本对于队员来说就比较高了, 就没打算使用redux). 假如wepy依旧不能自身对嵌套组件的数据流动等提供良好的支持, 那么依托wepy构建生态我觉得是非常困难的.<pre><code>&#x2F;&#x2F; parent.wpy&lt;templete&gt;    &lt;view&gt;        &lt;Child :prop.sync=&quot;someData&quot;&#x2F;&gt;    &lt;&#x2F;view&gt;&lt;&#x2F;templete&gt;&lt;script&gt;import wepy from &quot;wepy&quot;import Child from &quot;.&#x2F;child&quot;export default class Parent extends wepy.component {    components = {        Child    }    data = {        someData: &quot;something&quot;    }}&lt;&#x2F;script&gt;&#x2F;&#x2F; child.wpy&lt;templete&gt;    &lt;view&gt;        &lt;Descendant :prop.sync=&quot;someData&quot;&#x2F;&gt;    &lt;&#x2F;view&gt;&lt;&#x2F;templete&gt;&lt;script&gt;import wepy from &quot;wepy&quot;import Descendant from &quot;.&#x2F;child&quot;export default class Child extends wepy.component {    components = {        Descendant    }    props = {        someData: String    }}&lt;&#x2F;script&gt;&#x2F;&#x2F; descendant.wpy&lt;templete&gt;    &lt;view&gt;        &lt;view&gt;\{\{someData}}&lt;&#x2F;view&gt;    &lt;&#x2F;view&gt;&lt;&#x2F;templete&gt;&lt;script&gt;import wepy from &quot;wepy&quot;export default class Descendant extends wepy.component {    props = {        someData: String    }}&lt;&#x2F;script&gt;</code></pre>解决这个问题没有什么好的办法, redux可能能够解决, 还有就是, 不使用多重嵌套. 我使用wepy的经验告诉我, 最好不要组件套组件, 所有的组件都直接写在page里面, 使用page的data来控制数据流动, 这样的话, 也能解决由于组件生命周期不完全的部分问题. <strong>在wepy中, 组件是没有onShow, onHide的生命周期的</strong>, 所以使用页面来管理数据，是一种比较好的方法,比如下面的例子.<pre><code>&#x2F;&#x2F; index.wpy&lt;templete&gt;    &lt;view&gt;        &lt;Child1 :prop.sync=&quot;message1&quot; :onTap=&quot;onTap1&quot;&#x2F;&gt;        &lt;Child2 :prop.sync=&quot;message2&quot; :onTap=&quot;onTap2&quot;&#x2F;&gt;        &lt;Child3 :prop.sync=&quot;message3&quot; :onTap=&quot;onTap3&quot;&#x2F;&gt;    &lt;&#x2F;view&gt;&lt;&#x2F;templete&gt;&lt;script&gt;import wepy from &quot;wepy&quot;import Child from &quot;.&#x2F;child&quot;export default class Index extends wepy.page {    components = {        Child1: Child,        Child2: Child,        Child3: Child    }    data = {        message1: &quot;&quot;,        message2: &quot;&quot;,        message3: &quot;&quot;,        onTap1: (event) =&gt; {            this.message1 = &quot;1&quot;                        this.$apply()        },        onTap2: (event) =&gt; {            this.message2 = &quot;2&quot;            this.$apply()        },        onTap3: (event) =&gt; {            this.message3 = &quot;3&quot;            this.$apply()        },        timer: &quot;&quot;    }    onShow: () =&gt; {        this.timer = setInterval(() =&gt; {            wx.request({                url: &quot;example.com&quot;,                success: (res) =&gt; {                    this.message1 = res.data[1]                    this.message2 = res.data[2]                    this.message3 = res.data[3]                    this.$apply()                }            })        }, 3000)        this.$apply()    }    onHide: () =&gt; {        clearInterval(this.timer)    }}&lt;&#x2F;script&gt;&#x2F;&#x2F; child.wpy&lt;templete&gt;    &lt;view&gt;        &lt;view @tap=&quot;bindTap&quot;&gt;\{\{message}}&lt;&#x2F;view&gt;    &lt;&#x2F;view&gt;&lt;&#x2F;templete&gt;&lt;script&gt;import wepy from &quot;wepy&quot;import Descendant from &quot;.&#x2F;child&quot;export default class Child extends wepy.component {    components = {        Descendant    }    props = {        someData: String,        onTap: Function    }    methods = {        bindTap: (event) =&gt; {            if (this.onTap) {                this.onTap(event)            }        }    }}&lt;&#x2F;script&gt;</code></pre>这个例子中, 使用页面来管理数据, 能够根据页面的隐藏与显示来决定是否请求刷新数据. <strong>同时还有一个要注意的点,就是这个例子中的子组件绑定事件处理函数的方法,从props得到的是数据(函数),是无法直接绑定到事件处理函数的,必须得在methods(注意这里有s)中声明才能绑定,否则是不会起作用的</strong></li></ol><ol><li><p>编译生成文件过大的问题. wepy编译文件采取的是覆盖的策略, 如果你在源码中删除了一些文件, 编译生成的文件中还是会存在. 如果你想要缩小体积, 删除编译生成的文件, 删除.wepycache后重新编译. 压缩代码时将wepyconfig中的prod改为true就会压缩代码.</p></li><li><p>编译出错的问题. 在开发者工具的报错的代码中如果发现了生成的代码有未编译的属性, 如.once, .sync, 说明wepy编译出了问题, 后面的编译可能都没有完成. 有时候编译错误实在无法解决的话, 最好的办法是用git回到上一个版本(确实出现过几次非常奇怪的编译错误, 修改来修改去都无法解决, 最后还是回滚代码)</p></li></ol><h2 id="微信大赛总结"><a href="#微信大赛总结" class="headerlink" title="微信大赛总结"></a>微信大赛总结</h2><h3 id="需求与开发的问题"><a href="#需求与开发的问题" class="headerlink" title="需求与开发的问题"></a>需求与开发的问题</h3><p>记得之前看&lt;代码大全&gt;的时候, 上面一直提到前期准备的重要性, 当时觉得有点夸张, 现在看来, 在软件开发的时候, 前期准备是非常重要的. 这次比赛我们的需求在后期甚至还有些变动, 整个流程在前期准备时没有形成书面化的文档, 前后端接口的文档也存在部分问题, 以致于前后端对于整个需求的理解不同, 到了后期一直在修改代码. 下次遇到项目时, 可以试着首先就分析需求, 将需求, 业务流程, 前后端接口, 形成完整的书面化的文档, 确定开发者对于业务的需求, 流程到达一致的理解, 最终再进行编写代码, 可能会效果好一点. 同时在设计数据库的时候, 应该要考虑到数据的规模, 提前做好做出优化的准备, 不然到后期进行更改操作数据库的代码也比较麻烦.(&lt;代码大全&gt;有时间还是得看一看)</p><h3 id="文档与视频"><a href="#文档与视频" class="headerlink" title="文档与视频"></a>文档与视频</h3><p>这次比赛做的<a href="https://v.qq.com/x/page/h068154pz45.html" target="_blank" rel="noopener">视频</a>效果还不错, 文档也写的不错(都是队友的功劳), 之前也确实知道这些能够表现出功能的东西还是非常重要的, 但是没有掌握相关的技能, 以后还是得慢慢学习.</p>]]></content>
+      
+      <categories>
+          
+          <category> 总结 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 总结 </tag>
+            
+            <tag> wepy </tag>
+            
+            <tag> 微信小程序 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
+      <title>关于exam项目的总结</title>
+      <link href="/2018/04/01/summary-of-exam/"/>
+      <url>/2018/04/01/summary-of-exam/</url>
+      <content type="html"><![CDATA[<h1 id="v1-0-0"><a href="#v1-0-0" class="headerlink" title="v1.0.0"></a>v1.0.0</h1><p>之前一直用的原生js以及jq, 后来慢慢感受到, 随着项目越来越复杂, 没有框架的约束, 以及我飘忽不定的构建方式, 让代码的可维护性越来越低. 在做这个项目的一开始就感觉到, 这件事情并不简单.</p><h2 id="react"><a href="#react" class="headerlink" title="react"></a>react</h2><p>react是现在的三大框架之一, 关于它的理念官网上有, 就不多说, 关于它我主要谈一谈自己对框架的理解与对react的理解.</p><h3 id="react与框架"><a href="#react与框架" class="headerlink" title="react与框架"></a>react与框架</h3><p>之前用Python写过爬虫, 用node, c写过后端, 也写过前端, 但是写的都是一些非常零散的东西, 使用的是一些库, 而不是框架. 但是通过对react的理解, 我大概猜到, 无论是前后端, 还是测试等等多个领域(也可以说只是一个领域-软件工程师), 框架的作用是什么呢, 就是能够规范代码的结构, 在多人的协作过程中, 采用一种常规且通用的方法来实现项目. 因为使用框架写出来的代码, 结构是固定的, 对于了解规范与理念的协作者, 也更容易读懂他人的代码以及后期读懂自己的代码, 提高了项目的可维护性.</p><h3 id="react的理解"><a href="#react的理解" class="headerlink" title="react的理解"></a>react的理解</h3><p><strong>react是一个用来完成ui的库, 它并不提供对数据的处理方法</strong>, 单向的数据流自顶向下流动, 将数据传到更深的层级. ui注重的是可重用性, 所以使用react, 最终写出的是一个个可重用的组件. </p><h4 id="组件的设计"><a href="#组件的设计" class="headerlink" title="组件的设计"></a>组件的设计</h4><p>在设计复杂, 可重用性强的react组件的时候, 主要样式的表现, 最好是由父组件向下, 通过传递props来进行改变子组件样式, 这样能够更好地使用数据来控制样式. 让组件自身管理数据, 通过调用自身的setState来改变自身的表现, 这样的设计在简单的应用中确实简单好用, 不需要其他开发者来管理组件的表现, 但是在复杂的应用中, 可能会出现通过数据来人为改变组件表现样式的需求, 比如在初始化页面的时候就使组件的样式根据数据达到特定的状态(在做复杂的webApp的过程中这样的需求很常见). </p><p>react组件的设计需要看实际情况而定, 当组件或者应用特别简单时, 就可以考虑使用setState让组件来自己管理数据, 但当应用复杂, 需要用数据对组件样式实现精细控制时, 使用props来接受上层是数据控制组件的样式是一种更好的选择, 特别是结合redux等工具使用时, 能够让样式与数据分离, 极大提高可复用性.</p><p><strong>2018-6-17更新</strong><br>发现我当时的感悟就是完全受控组件, 包含react16.04中想要体现出来的一种思想. 文章<a href="https://zhuanlan.zhihu.com/p/38090110" target="_blank" rel="noopener">[译] 你可能不需要 Derived State</a>写得挺好</p><h4 id="组件的渲染"><a href="#组件的渲染" class="headerlink" title="组件的渲染"></a>组件的渲染</h4><p>react的生命周期在官网说得很明确了, 没必要再写一遍占空间. 这里要说的是, 明确react的渲染过程.使用react一定要牢记的是<strong>组件只是虚拟dom, 并不会在浏览器中显示, 真正在浏览器中渲染的是dom(看上去的那些html标签)</strong>, 牢记这一点, 对于react组件渲染的理解就容易很多, 对react组件的表现也能够很好地分析.</p><p>组件在更新时, 当子树前后的根节点(组件的类型)不同时, 将卸载整个子树, 若根节点相同, 更新属性, 递归地向下更新. 组件进行渲染前接受到属性, 进行更新, 这里的更新实在虚拟dom上进行更新, 并不直接在浏览器中表现出来. react再根据虚拟dom更新仅需要更新的属性以及dom. 通常情况下, 改变props不会改变state, 这就是为什么在复杂应用中, 使用props控制样式是更好的选择.</p><h2 id="redux"><a href="#redux" class="headerlink" title="redux"></a>redux</h2><p>redux和react并不是绑定在一起的, redux是JavaScript状态容器, 能够在很多场景使用. react-redux为redux与react提供了桥梁, 用于给组件提供数据. react-redux是怎么提供数据的呢? 其实就是在react组件外层包裹了一层组件, 称为container, 通过props来给组件提供数据. container监听全局state的变化, 提供分发action的dispatch.</p><h3 id="redux中action与reducer的设计"><a href="#redux中action与reducer的设计" class="headerlink" title="redux中action与reducer的设计"></a>redux中action与reducer的设计</h3><p>在简单的应用中, 我认为action与reducer并不需要过多地设计, 能够实现功能即可. 但是在复杂的应用中, reducer与action应该设计得正交化(即每个action只对应一个reducer). 比如简单的应用中, 使用如下的设计方式是完全没有问题的, 甚至是较好的实践.<br><pre><code>&#x2F;&#x2F; action与reducer一对多&#x2F;&#x2F; actions&#x2F;doSomething.jsexport default () =&gt; ({    type: &quot;doSomething&quot;})&#x2F;&#x2F; reducers&#x2F;currentPage.jsexport default (currentPage=&quot;mainPage&quot;, action) =&gt; {    switch (action.type) {        case &quot;doSomething&quot;: {            return &quot;page1&quot;        }        default: {            return currentPage        }    }}&#x2F;&#x2F; reducers&#x2F;theme.jsexport default (theme=&quot;light&quot;, action) =&gt; {    switch (action.type) {        case &quot;doSomething&quot;: {            return &quot;dark&quot;        }        default: {            return theme        }    }}</code></pre></p><p>但是在复杂的应用中, action与reducer的设计不正交化, 最终的结果很可能是action变得冗杂(action与reducer一对多), 或者reducer不能明确地表现应用的状态(action与reducer多对一). 上面的例子在复杂应用中可以改写为如下<br><pre><code>&#x2F;&#x2F; action与reducer一对一&#x2F;&#x2F; actions&#x2F;setCurrentPage.jsexport default (page) =&gt; ({    type: &quot;SET_CURRENT_PAGE&quot;,    page})&#x2F;&#x2F; actions&#x2F;setTheme.jsexport default (theme) =&gt; ({    type: &quot;SET_THEME&quot;,    theme})&#x2F;&#x2F; reducers&#x2F;currentPage.jsexport default (currentPage=&quot;mainPage&quot;, action) =&gt; {    switch (action.type) {        case &quot;SET_CURRENT_PAGE&quot;: {            return action.page        }        default: {            return currentPage        }    }}&#x2F;&#x2F; reducers&#x2F;theme.jsexport default (theme=&quot;light&quot;, action) =&gt; {    switch (action.type) {        case &quot;SET_THEME&quot;: {            return action.theme        }        default: {            return theme        }    }}</code></pre></p><p>感觉正交化的设计在很多方面都是很好的实践, 比如平面坐标系的平面直角坐标系, 力的正交分解. 而css, 因为并不是正交化的设计, 多种属性之间相互作用, 所以现在css比较难学以及难以使用.(顺便提一下, <a href="http://www.zhangxinxu.com" target="_blank" rel="noopener">张鑫旭</a>老师对于css使用形象化理解, 反而更能节省时间. 就像现实生活中, 很多事情都是息息相关的, 我们很难去具体地分析, 靠着大脑对这个世界的适应与理解反而有时候会比较轻松)</p><p>关于react-redux使用方面的细节官方文档也提供了, 便不赘述. 对于mapStateToProps与mapDispatchToProps的设置, 官网上不是很清晰, 可以参考阮一峰老师的教程, 有例子比较容易理解.(这是觉得阮一峰老师的教程比官方文档好的为数不多的时候)</p><h2 id="webpack"><a href="#webpack" class="headerlink" title="webpack"></a>webpack</h2><p>webpack是构建应用非常好的自动化打包工具?可配置性强, 功能好用, 不过暂时没有了解webpack4. 不过这里我不是要感叹有多好用, 而是觉得使用webpack对于应用的缓存配置十分方便, 能够提高加载速度.</p><h3 id="webpack与应用缓存"><a href="#webpack与应用缓存" class="headerlink" title="webpack与应用缓存"></a>webpack与应用缓存</h3><p>通过webpack给最后生成的文件名加上chunck, 然后对html设置no-chache, 将生成的静态文件设施较长事件的缓存(我设置的是一年), 关闭etag节省服务器的运算能力, 第二次加载的时候只用加载非常小的html了, 甚至可以对html也关闭etag的计算, 牺牲网络请求来节省计算能力.</p><h2 id="随便写点什么"><a href="#随便写点什么" class="headerlink" title="随便写点什么"></a>随便写点什么</h2><p>还没有接触vue, 暂时对react感觉非常良好, 能够使用js精确地控制一切(不是dom, 而是组件和css), 这种完全控制的感觉非常好.</p><p><a href="https://github.com/Zack-Bee/exam" target="_blank" rel="noopener">项目地址</a></p>]]></content>
+      
+      <categories>
+          
+          <category> 总结 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 总结 </tag>
+            
+            <tag> react </tag>
+            
+            <tag> redux </tag>
+            
+            <tag> webpack </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
+      <title>如何使用exam</title>
+      <link href="/2018/03/31/how-to-use-exam/"/>
+      <url>/2018/03/31/how-to-use-exam/</url>
+      <content type="html"><![CDATA[<h3 id="基本功能"><a href="#基本功能" class="headerlink" title="基本功能"></a>基本功能</h3><p>可以选择本地的以.docx为结尾的题库, 选择后点击相应的条目, 即可进行测试,<br>管理员可以选择本地文件后上传到服务器, 并对服务器上的题目进行管理.</p><img src="/2018/03/31/how-to-use-exam/1.jpg" title="This is an example image"><img src="/2018/03/31/how-to-use-exam/2.jpg" title="This is an example image"><img src="/2018/03/31/how-to-use-exam/3.jpg" title="This is an example image"><img src="/2018/03/31/how-to-use-exam/4.jpg" title="This is an example image"><img src="/2018/03/31/how-to-use-exam/5.jpg" title="This is an example image"><img src="/2018/03/31/how-to-use-exam/6.jpg" title="This is an example image"><img src="/2018/03/31/how-to-use-exam/7.jpg" title="This is an example image"><img src="/2018/03/31/how-to-use-exam/8.jpg" title="This is an example image"><img src="/2018/03/31/how-to-use-exam/9.jpg" title="This is an example image"><h3 id="网址"><a href="#网址" class="headerlink" title="网址"></a>网址</h3><p><a href="https://exam.zackbee.cn" target="_blank" rel="noopener">EXAM</a></p><h3 id="文件类型"><a href="#文件类型" class="headerlink" title="文件类型"></a>文件类型</h3><p>目前只支持以.docx为结尾的文件的解析, 试过支持.doc文件, 但是解析出来出现乱码, 不容易解析.可以自己用word将.doc另存为.docx</p><h3 id="题库格式"><a href="#题库格式" class="headerlink" title="题库格式"></a>题库格式</h3><p><strong>如果不按照格式来改动选择的本地文件, 也能够基本使用</strong>, 可能会出现解析题目不全的情况. 云上的文件通常是由管理员上传, 一般是管理员修改后满足规定格式的.<br>如果你想要本地文件解析效果更好, 可以参照以下进行对文件的修改.<br>解析题目, 是通过下划线来判断填空题, 括号来判断选择题. 所以如果出现类似于<q>电压(工作时)</q>这样的形式, 将会被解析成选择题, 你可以将这种<q>()</q>改为<q>[]</q>.<br>每个题目必须有<q>数字、</q>这样的题号, 否则解析不出来, 你可以手动地添加题号, 题号仅起到标示这是题目的作用, 即使所有的题目的题号都是<q>1、</q>, 也能够正常解析.<br>部分题库的题号, 会使用word的逐渐增加功能, 比如第一个题号是<q>1、</q>, 第二个自动地是<q>2、</q>. 这样的题目是解析不出来的, 可以手动删去, 再人为地加上题号.</p><h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><p>不能直接使用qq打开, 因为qq不支持在wev view中选择文件. 为了国内的用户能够及时地更新以及使用高级浏览器(推荐使用chrome, Firefox), 没有对浏览器做兼容处理, 如果出现了EXAM的标题, 却无法显示页面, 是因为浏览器过于古老.</p><h3 id="项目地址"><a href="#项目地址" class="headerlink" title="项目地址"></a>项目地址</h3><p><a href="https://github.com/Zack-Bee/exam" target="_blank" rel="noopener">地址</a></p>]]></content>
+      
+      <categories>
+          
+          <category> 教程 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 教程 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+  
+  
+    
+  
+</search>

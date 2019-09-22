@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html style="display: none;" lang="zh">
+    <head>
+    <meta charset="utf-8">
+    <!--
+        © Material Theme
+        https://github.com/viosey/hexo-theme-material
+        Version: 1.5.2 -->
+    <script>
+        window.materialVersion = "1.5.2"
+        // Delete localstorage with these tags
+        window.oldVersion = [
+            'codestartv1',
+            '1.3.4',
+            '1.4.0',
+            '1.4.0b1',
+            '1.5.0'
+        ]
+    </script>
+
+    <!-- dns prefetch -->
+    <meta http-equiv="x-dns-prefetch-control" content="on">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- Meta & Info -->
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!-- Title -->
+    
+    <title>
+        
+            微信小程序开发以及微信小程序大赛总结 | 
+        
+        zackbee的博客
+    </title>
+
+    <!-- Favicons -->
+    <link rel="icon shortcut" type="image/ico" href="/img/pig.jpg">
+    <link rel="icon" href="/img/pig.jpg">
+
+    <meta name="format-detection" content="telephone=no"/>
+    <meta name="description" itemprop="description" content="zackbee的个人博客">
+    <meta name="keywords" content=",总结,wepy,微信小程序">
+    <meta name="theme-color" content="#35baf6">
+
+    <!-- Disable Fucking Bloody Baidu Tranformation -->
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+    <!--[if lte IE 9]>
+        <link rel="stylesheet" href="/css/ie-blocker.css">
+
+        
+            <script src="/js/ie-blocker.zhCN.js"></script>
+        
+    <![endif]-->
+
+    <!-- Import lsloader -->
+    <script>(function(){window.lsloader={jsRunSequence:[],jsnamemap:{},cssnamemap:{}};lsloader.removeLS=function(a){try{localStorage.removeItem(a)}catch(b){}};lsloader.setLS=function(a,c){try{localStorage.setItem(a,c)}catch(b){}};lsloader.getLS=function(a){var c="";try{c=localStorage.getItem(a)}catch(b){c=""}return c};versionString="/*"+(window.materialVersion||"unknownVersion")+"*/";lsloader.clean=function(){try{var b=[];for(var a=0;a<localStorage.length;a++){b.push(localStorage.key(a))}b.forEach(function(e){var f=lsloader.getLS(e);if(window.oldVersion){var d=window.oldVersion.reduce(function(g,h){return g||f.indexOf("/*"+h+"*/")!==-1},false);if(d){lsloader.removeLS(e)}}})}catch(c){}};lsloader.clean();lsloader.load=function(f,a,b,d){if(typeof b==="boolean"){d=b;b=undefined}d=d||false;b=b||function(){};var e;e=this.getLS(f);if(e&&e.indexOf(versionString)===-1){this.removeLS(f);this.requestResource(f,a,b,d);return}if(e){var c=e.split(versionString)[0];if(c!=a){console.log("reload:"+a);this.removeLS(f);this.requestResource(f,a,b,d);return}e=e.split(versionString)[1];if(d){this.jsRunSequence.push({name:f,code:e});this.runjs(a,f,e)}else{document.getElementById(f).appendChild(document.createTextNode(e));b()}}else{this.requestResource(f,a,b,d)}};lsloader.requestResource=function(b,e,a,c){var d=this;if(c){this.iojs(e,b,function(h,f,g){d.setLS(f,h+versionString+g);d.runjs(h,f,g)})}else{this.iocss(e,b,function(f){document.getElementById(b).appendChild(document.createTextNode(f));d.setLS(b,e+versionString+f)},a)}};lsloader.iojs=function(d,b,g){var a=this;a.jsRunSequence.push({name:b,code:""});try{var f=new XMLHttpRequest();f.open("get",d,true);f.onreadystatechange=function(){if(f.readyState==4){if((f.status>=200&&f.status<300)||f.status==304){if(f.response!=""){g(d,b,f.response);return}}a.jsfallback(d,b)}};f.send(null)}catch(c){a.jsfallback(d,b)}};lsloader.iocss=function(f,c,h,a){var b=this;try{var g=new XMLHttpRequest();g.open("get",f,true);g.onreadystatechange=function(){if(g.readyState==4){if((g.status>=200&&g.status<300)||g.status==304){if(g.response!=""){h(g.response);a();return}}b.cssfallback(f,c,a)}};g.send(null)}catch(d){b.cssfallback(f,c,a)}};lsloader.iofonts=function(f,c,h,a){var b=this;try{var g=new XMLHttpRequest();g.open("get",f,true);g.onreadystatechange=function(){if(g.readyState==4){if((g.status>=200&&g.status<300)||g.status==304){if(g.response!=""){h(g.response);a();return}}b.cssfallback(f,c,a)}};g.send(null)}catch(d){b.cssfallback(f,c,a)}};lsloader.runjs=function(f,c,e){if(!!c&&!!e){for(var b in this.jsRunSequence){if(this.jsRunSequence[b].name==c){this.jsRunSequence[b].code=e}}}if(!!this.jsRunSequence[0]&&!!this.jsRunSequence[0].code&&this.jsRunSequence[0].status!="failed"){var a=document.createElement("script");a.appendChild(document.createTextNode(this.jsRunSequence[0].code));a.type="text/javascript";document.getElementsByTagName("head")[0].appendChild(a);this.jsRunSequence.shift();if(this.jsRunSequence.length>0){this.runjs()}}else{if(!!this.jsRunSequence[0]&&this.jsRunSequence[0].status=="failed"){var d=this;var a=document.createElement("script");a.src=this.jsRunSequence[0].path;a.type="text/javascript";this.jsRunSequence[0].status="loading";a.onload=function(){d.jsRunSequence.shift();if(d.jsRunSequence.length>0){d.runjs()}};document.body.appendChild(a)}}};lsloader.tagLoad=function(b,a){this.jsRunSequence.push({name:a,code:"",path:b,status:"failed"});this.runjs()};lsloader.jsfallback=function(c,b){if(!!this.jsnamemap[b]){return}else{this.jsnamemap[b]=b}for(var a in this.jsRunSequence){if(this.jsRunSequence[a].name==b){this.jsRunSequence[a].code="";this.jsRunSequence[a].status="failed";this.jsRunSequence[a].path=c}}this.runjs()};lsloader.cssfallback=function(e,c,b){if(!!this.cssnamemap[c]){return}else{this.cssnamemap[c]=1}var d=document.createElement("link");d.type="text/css";d.href=e;d.rel="stylesheet";d.onload=d.onerror=b;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(d,a)};lsloader.runInlineScript=function(c,b){var a=document.getElementById(b).innerText;this.jsRunSequence.push({name:c,code:a});this.runjs()}})();</script>
+
+    <!-- Import queue -->
+    <script>function Queue(){this.dataStore=[];this.offer=b;this.poll=d;this.execNext=a;this.debug=false;this.startDebug=c;function b(e){if(this.debug){console.log("Offered a Queued Function.")}if(typeof e==="function"){this.dataStore.push(e)}else{console.log("You must offer a function.")}}function d(){if(this.debug){console.log("Polled a Queued Function.")}return this.dataStore.shift()}function a(){var e=this.poll();if(e!==undefined){if(this.debug){console.log("Run a Queued Function.")}e()}}function c(){this.debug=true}}var queue=new Queue();</script>
+
+    <!-- Import CSS -->
+    
+        <style id="material_css"></style><script>if(typeof window.lsLoadCSSMaxNums === "undefined")window.lsLoadCSSMaxNums = 0;window.lsLoadCSSMaxNums++;lsloader.load("material_css","/css/material.min.css?Z7a72R1E4SxzBKR/WGctOA==",function(){if(typeof window.lsLoadCSSNums === "undefined")window.lsLoadCSSNums = 0;window.lsLoadCSSNums++;if(window.lsLoadCSSNums == window.lsLoadCSSMaxNums)document.documentElement.style.display="";}, false)</script>
+        <style id="style_css"></style><script>if(typeof window.lsLoadCSSMaxNums === "undefined")window.lsLoadCSSMaxNums = 0;window.lsLoadCSSMaxNums++;lsloader.load("style_css","/css/style.min.css?MKetZV3cUTfDxvMffaOezg==",function(){if(typeof window.lsLoadCSSNums === "undefined")window.lsLoadCSSNums = 0;window.lsLoadCSSNums++;if(window.lsLoadCSSNums == window.lsLoadCSSMaxNums)document.documentElement.style.display="";}, false)</script>
+
+        
+            
+                <style id="prettify_css"></style><script>if(typeof window.lsLoadCSSMaxNums === "undefined")window.lsLoadCSSMaxNums = 0;window.lsLoadCSSMaxNums++;lsloader.load("prettify_css","/css/prettify.min.css?zp8STOU9v89XWFEnN+6YmQ==",function(){if(typeof window.lsLoadCSSNums === "undefined")window.lsLoadCSSNums = 0;window.lsLoadCSSNums++;if(window.lsLoadCSSNums == window.lsLoadCSSMaxNums)document.documentElement.style.display="";}, false)</script>
+                <style id="prettify_theme"></style><script>if(typeof window.lsLoadCSSMaxNums === "undefined")window.lsLoadCSSMaxNums = 0;window.lsLoadCSSMaxNums++;lsloader.load("prettify_theme","/css/prettify/tranquil-heart.min.css?ul3p9I9MsbOxK0L+BHzDDg==",function(){if(typeof window.lsLoadCSSNums === "undefined")window.lsLoadCSSNums = 0;window.lsLoadCSSNums++;if(window.lsLoadCSSNums == window.lsLoadCSSMaxNums)document.documentElement.style.display="";}, false)</script>
+            
+        
+
+    
+
+    
+
+    <!-- Config CSS -->
+
+<!-- Other Styles -->
+<style>
+  body, html {
+    font-family: Roboto, "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+    overflow-x: hidden !important;
+  }
+  
+  code {
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  }
+
+  a {
+    color: #00838F;
+  }
+
+  .mdl-card__media,
+  #search-label,
+  #search-form-label:after,
+  #scheme-Paradox .hot_tags-count,
+  #scheme-Paradox .sidebar_archives-count,
+  #scheme-Paradox .sidebar-colored .sidebar-header,
+  #scheme-Paradox .sidebar-colored .sidebar-badge{
+    background-color: #35baf6 !important;
+  }
+
+  /* Sidebar User Drop Down Menu Text Color */
+  #scheme-Paradox .sidebar-colored .sidebar-nav>.dropdown>.dropdown-menu>li>a:hover,
+  #scheme-Paradox .sidebar-colored .sidebar-nav>.dropdown>.dropdown-menu>li>a:focus {
+    color: #35baf6 !important;
+  }
+
+  #post_entry-right-info,
+  .sidebar-colored .sidebar-nav li:hover > a,
+  .sidebar-colored .sidebar-nav li:hover > a i,
+  .sidebar-colored .sidebar-nav li > a:hover,
+  .sidebar-colored .sidebar-nav li > a:hover i,
+  .sidebar-colored .sidebar-nav li > a:focus i,
+  .sidebar-colored .sidebar-nav > .open > a,
+  .sidebar-colored .sidebar-nav > .open > a:hover,
+  .sidebar-colored .sidebar-nav > .open > a:focus,
+  #ds-reset #ds-ctx .ds-ctx-entry .ds-ctx-head a {
+    color: #35baf6 !important;
+  }
+
+  .toTop {
+    background: #757575 !important;
+  }
+
+  .material-layout .material-post>.material-nav,
+  .material-layout .material-index>.material-nav,
+  .material-nav a {
+    color: #757575;
+  }
+
+  #scheme-Paradox .MD-burger-layer {
+    background-color: #757575;
+  }
+
+  #scheme-Paradox #post-toc-trigger-btn {
+    color: #757575;
+  }
+
+  .post-toc a:hover {
+    color: #00838F;
+    text-decoration: underline;
+  }
+
+</style>
+
+
+<!-- Theme Background Related-->
+
+    <style>
+      body{
+        background-image: url(/img/bg.png);
+      }
+    </style>
+
+
+
+
+<!-- Fade Effect -->
+
+    <style>
+      .fade {
+        transition: all 800ms linear;
+        -webkit-transform: translate3d(0,0,0);
+        -moz-transform: translate3d(0,0,0);
+        -ms-transform: translate3d(0,0,0);
+        -o-transform: translate3d(0,0,0);
+        transform: translate3d(0,0,0);
+        opacity: 1;
+      }
+
+      .fade.out{
+        opacity: 0;
+      }
+    </style>
+
+
+<!-- Import Font -->
+<!-- Import Roboto -->
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+
+
+<!-- Import Material Icons -->
+
+
+    <style id="material_icons"></style><script>if(typeof window.lsLoadCSSMaxNums === "undefined")window.lsLoadCSSMaxNums = 0;window.lsLoadCSSMaxNums++;lsloader.load("material_icons","/css/material-icons.css?pqhB/Rd/ab0H2+kZp0RDmw==",function(){if(typeof window.lsLoadCSSNums === "undefined")window.lsLoadCSSNums = 0;window.lsLoadCSSNums++;if(window.lsLoadCSSNums == window.lsLoadCSSMaxNums)document.documentElement.style.display="";}, false)</script>
+
+
+
+
+    <!-- Import jQuery -->
+    
+        <script>lsloader.load("jq_js","/js/jquery.min.js?qcusAULNeBksqffqUM2+Ig==", true)</script>
+    
+
+    <!-- WebAPP Icons -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="zackbee的博客">
+    <meta name="msapplication-starturl" content="https://zackbee.cn/2018/06/12/微信小程序开发以及微信小程序大赛总结/">
+    <meta name="msapplication-navbutton-color" content="#35baf6">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="zackbee的博客">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon" href="/img/pig.jpg">
+
+    <!-- Site Verification -->
+    
+    
+
+    <!-- RSS -->
+    
+
+    <!-- The Open Graph protocol -->
+    <meta property="og:url" content="https://zackbee.cn/2018/06/12/微信小程序开发以及微信小程序大赛总结/">
+    <meta property="og:type" content="blog">
+    <meta property="og:title" content="微信小程序开发以及微信小程序大赛总结 | zackbee的博客">
+    <meta property="og:image" content="/img/pig.jpg">
+    <meta property="og:description" content="zackbee的个人博客">
+    <meta property="og:article:tag" content="总结"> <meta property="og:article:tag" content="wepy"> <meta property="og:article:tag" content="微信小程序"> 
+
+    
+        <meta property="article:published_time" content="Tue Jun 12 2018 19:05:27 GMT+0800">
+        <meta property="article:modified_time" content="Wed Aug 07 2019 21:40:25 GMT+0800">
+    
+
+    <!-- The Twitter Card protocol -->
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- Add canonical link for SEO -->
+    
+        <link rel="canonical" href="https://zackbee.cn/2018/06/12/微信小程序开发以及微信小程序大赛总结/index.html" />
+    
+
+    <!-- Structured-data for SEO -->
+    
+        
+
+
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "mainEntityOfPage": "https://zackbee.cn/2018/06/12/微信小程序开发以及微信小程序大赛总结/index.html",
+    "headline": "微信小程序开发以及微信小程序大赛总结",
+    "datePublished": "Tue Jun 12 2018 19:05:27 GMT+0800",
+    "dateModified": "Wed Aug 07 2019 21:40:25 GMT+0800",
+    "author": {
+        "@type": "Person",
+        "name": "zackbee",
+        "image": {
+            "@type": "ImageObject",
+            "url": "/img/pig.jpg"
+        },
+        "description": "你看过天空么"
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "zackbee的博客",
+        "logo": {
+            "@type":"ImageObject",
+            "url": "/img/pig.jpg"
+        }
+    },
+    "keywords": ",总结,wepy,微信小程序",
+    "description": "zackbee的个人博客",
+}
+</script>
+
+
+    
+
+    <!-- Analytics -->
+    
+    
+    
+
+    <!-- Custom Head -->
+    
+
+<link rel="stylesheet" href="/css/prism-vs.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
+
+
+    
+        <body id="scheme-Paradox" class="lazy">
+            <div class="material-layout  mdl-js-layout has-drawer is-upgraded">
+                
+
+                <!-- Main Container -->
+                <main class="material-layout__content" id="main">
+
+                    <!-- Top Anchor -->
+                    <div id="top"></div>
+
+                    
+                        <!-- Hamburger Button -->
+                        <button class="MD-burger-icon sidebar-toggle">
+                            <span class="MD-burger-layer"></span>
+                        </button>
+                    
+
+                    <!-- Post TOC -->
+
+    
+    <!-- Back Button -->
+    <!--
+    <div class="material-back" id="backhome-div" tabindex="0">
+        <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon"
+           href="#" onclick="window.history.back();return false;"
+           target="_self"
+           role="button"
+           data-upgraded=",MaterialButton,MaterialRipple">
+            <i class="material-icons" role="presentation">arrow_back</i>
+            <span class="mdl-button__ripple-container">
+                <span class="mdl-ripple"></span>
+            </span>
+        </a>
+    </div>
+    -->
+
+
+    <!-- Left aligned menu below button -->
+    
+    
+    <button id="post-toc-trigger-btn"
+        class="mdl-button mdl-js-button mdl-button--icon">
+        <i class="material-icons">format_list_numbered</i>
+    </button>
+
+    <ul class="post-toc-wrap mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" for="post-toc-trigger-btn" style="max-height:80vh; overflow-y:scroll;">
+        <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#微信小程序开发"><span class="post-toc-number">1.</span> <span class="post-toc-text">微信小程序开发</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#关于微信小程序"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">关于微信小程序</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#开发微信小程序中需要注意的地方"><span class="post-toc-number">1.1.1.</span> <span class="post-toc-text">开发微信小程序中需要注意的地方</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#关于wepy"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">关于wepy</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#wepy中需要注意的地方-坑"><span class="post-toc-number">1.2.1.</span> <span class="post-toc-text">wepy中需要注意的地方(坑)</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#微信大赛总结"><span class="post-toc-number">2.</span> <span class="post-toc-text">微信大赛总结</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#需求与开发的问题"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">需求与开发的问题</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#文档与视频"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">文档与视频</span></a></li></ol></li></ol>
+    </ul>
+    
+
+
+
+
+<!-- Layouts -->
+
+    <!-- Post Module -->
+    <div class="material-post_container">
+
+        <div class="material-post mdl-grid">
+            <div class="mdl-card mdl-shadow--4dp mdl-cell mdl-cell--12-col">
+
+                <!-- Post Header(Thumbnail & Title) -->
+                
+    <!-- Paradox Post Header -->
+    
+        
+            <!-- Random Thumbnail -->
+            <div class="post_thumbnail-random mdl-card__media mdl-color-text--grey-50">
+            <script type="text/ls-javascript" id="post-thumbnail-script">
+    var randomNum = Math.floor(Math.random() * 19 + 1);
+
+    $('.post_thumbnail-random').attr('data-original', '/img/random/material-' + randomNum + '.png');
+    $('.post_thumbnail-random').addClass('lazy');
+</script>
+
+        
+    
+            <p class="article-headline-p">
+                微信小程序开发以及微信小程序大赛总结
+            </p>
+        </div>
+
+
+
+
+
+                
+                    <!-- Paradox Post Info -->
+                    <div class="mdl-color-text--grey-700 mdl-card__supporting-text meta">
+
+    <!-- Author Avatar -->
+    <div id="author-avatar">
+        <img src="/img/pig.jpg" width="44px" height="44px" alt="Author Avatar"/>
+    </div>
+    <!-- Author Name & Date -->
+    <div>
+        <strong>zackbee</strong>
+        <span>6月 12, 2018</span>
+    </div>
+
+    <div class="section-spacer"></div>
+
+    <!-- Favorite -->
+    <!--
+        <button id="article-functions-like-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon btn-like">
+            <i class="material-icons" role="presentation">favorite</i>
+            <span class="visuallyhidden">favorites</span>
+        </button>
+    -->
+
+    <!-- Qrcode -->
+    
+
+    <!-- Tags (bookmark) -->
+    
+    <button id="article-functions-viewtags-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+        <i class="material-icons" role="presentation">bookmark</i>
+        <span class="visuallyhidden">bookmark</span>
+    </button>
+    <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="article-functions-viewtags-button">
+        <li class="mdl-menu__item">
+        <a class="post_tag-link" href="/tags/wepy/">wepy</a></li><li class="mdl-menu__item"><a class="post_tag-link" href="/tags/微信小程序/">微信小程序</a></li><li class="mdl-menu__item"><a class="post_tag-link" href="/tags/总结/">总结</a>
+    </ul>
+    
+
+    <!-- Share -->
+    
+        <button id="article-fuctions-share-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+    <i class="material-icons" role="presentation">share</i>
+    <span class="visuallyhidden">share</span>
+</button>
+<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="article-fuctions-share-button">
+    
+
+    
+
+    <!-- Share Weibo -->
+    
+
+    <!-- Share Twitter -->
+    
+        <a class="post_share-link" href="https://twitter.com/intent/tweet?text=微信小程序开发以及微信小程序大赛总结&url=https://zackbee.cn/2018/06/12/微信小程序开发以及微信小程序大赛总结/index.html&via=zackbee" target="_blank">
+            <li class="mdl-menu__item">
+                分享到 Twitter
+            </li>
+        </a>
+    
+
+    <!-- Share Facebook -->
+    
+        <a class="post_share-link" href="https://www.facebook.com/sharer/sharer.php?u=https://zackbee.cn/2018/06/12/微信小程序开发以及微信小程序大赛总结/index.html" target="_blank">
+            <li class="mdl-menu__item">
+                分享到 Facebook
+            </li>
+        </a>
+    
+
+    <!-- Share Google+ -->
+    
+
+    <!-- Share LinkedIn -->
+    
+
+    <!-- Share QQ -->
+    
+        <a class="post_share-link" href="http://connect.qq.com/widget/shareqq/index.html?site=zackbee的博客&title=微信小程序开发以及微信小程序大赛总结&summary=zackbee的个人博客&pics=https://zackbee.cn/img/pig.jpg&url=https://zackbee.cn/2018/06/12/微信小程序开发以及微信小程序大赛总结/index.html" target="_blank">
+            <li class="mdl-menu__item">
+                分享到 QQ
+            </li>
+        </a>
+    
+
+    <!-- Share Telegram -->
+    
+        <a class="post_share-link" href="https://telegram.me/share/url?url=https://zackbee.cn/2018/06/12/微信小程序开发以及微信小程序大赛总结/index.html&text=微信小程序开发以及微信小程序大赛总结" target="_blank">
+            <li class="mdl-menu__item">
+                分享到 Telegram
+            </li>
+        </a>
+    
+</ul>
+
+    
+</div>
+
+                
+
+                <!-- Post Content -->
+                <div id="post-content" class="mdl-color-text--grey-700 mdl-card__supporting-text fade out">
+    
+        <h2 id="微信小程序开发"><a href="#微信小程序开发" class="headerlink" title="微信小程序开发"></a>微信小程序开发</h2><h3 id="关于微信小程序"><a href="#关于微信小程序" class="headerlink" title="关于微信小程序"></a>关于微信小程序</h3><p>在开发微信小程序之前, 把文档通读了一遍, 看了下网上关于微信小程序架构的分析.从微信小程序为移动端的各种事件的优化, 基础组件的非常实用属性, wxss中的rpx属性, 小程序的框架等等, 能够看得出来微信团队为了让微信小程序开发(移动端的开发)变得容易做出的一些努力, 但是对于熟悉了web前端开发良好的生态的开发者来说, 微信小程序却让人有些难过, 原本在web开发中的优秀的库都无法使用, 小程序开发的生态暂时非常一般. 尽管有wepy(使用过, 有坑), mpvue(还没使用过), taro(做完比赛之后才发现这个库, 用了比较喜欢的react风格), 但表现得仍然不尽人意, 希望微信小程序越来越好吧.</p>
+<h4 id="开发微信小程序中需要注意的地方"><a href="#开发微信小程序中需要注意的地方" class="headerlink" title="开发微信小程序中需要注意的地方"></a>开发微信小程序中需要注意的地方</h4><ol>
+<li><p>微信开发者工具在win10上, map组件中的controller点击之后无效. 当时出现这个问题找了很久bug, 从代码到wepy逐渐排查, 最后发现竟然是开发者工具在win10的问题. 所以在开发微信小程序的时候, 如果你确认你的代码没问题, 在开发者工具上跑不了的时候, 试试手机调试.</p>
+</li>
+<li><p>使用scroll-view组件的时候, 必须得给他指定height, scrolltoupper事件和scrolltolower事件才能生效.</p>
+</li>
+<li><p>有map组件存在的页面, 很多css属性是不能生效的, 比如box-shadow. 那么如果想要做成滴滴打车小程序那样的阴影效果该怎么办呢? 使用cover-view和cover-image加载图片来完成hack. 同时需要注意的是, <strong>cover-image不在cover-view里面也是无法生效的</strong></p>
+</li>
+<li><p>使用wx.getStorageSync借口获得本地存储的数据, 如果数据在本地中没有, 返回的不是undefined, 而是””, 空字符串.</p>
+</li>
+</ol>
+<h3 id="关于wepy"><a href="#关于wepy" class="headerlink" title="关于wepy"></a>关于wepy</h3><p>在编写代码的时候进行技术选型, 考虑了wepy和mpvue, 但是因为mpvue是刚开源不久的项目, issue里面的讨论也没有wepy多, 就选择了看起来更加成熟的wepy.</p>
+<p>在写wepy的过程中, 也能够看出来wepy做的努力, 感觉是参考了vue和react特性, 从中吸取了两者的优点吧.(写着写着就能感受到react的感觉, 之前没有接触vue, 但是使用wepy的过程中把vue的文档看完了, 可能是情人眼里出西施吧, 越发觉得react的文档组织得比vue好), 但是使用wepy还是有一些需要注意的地方的(可能是受到了微信小程序机制的限制), 以下我将详细说明.</p>
+<h4 id="wepy中需要注意的地方-坑"><a href="#wepy中需要注意的地方-坑" class="headerlink" title="wepy中需要注意的地方(坑)"></a>wepy中需要注意的地方(坑)</h4><ol>
+<li>wepy对于组件的支持差强人意.<br>当你多重嵌套定义组件时, 数据向下层流动很容易出问题.<br>在下面的示例代码中, child组件在onLoad触发的时候是无法访问到someData的数据的, 这不是最大的问题, 最大的问题是, 从child到descendant, 使用child的props向下传递数据是行不通的, 数据最多从一个组件的data通过子组件的props流向子组件, 无法再从子组件流向子孙组件. wepy这样的行为, 就限制了组件的重复使用, 因为数据流动最多一层(wepy支持使用redux来管理数据, 技术选型的时候, 考虑到队员没有接触过react, vue等框架, 学习wepy本身的学习成本对于队员来说就比较高了, 就没打算使用redux). 假如wepy依旧不能自身对嵌套组件的数据流动等提供良好的支持, 那么依托wepy构建生态我觉得是非常困难的.<pre><code>&#x2F;&#x2F; parent.wpy
+&lt;templete&gt;
+    &lt;view&gt;
+        &lt;Child :prop.sync=&quot;someData&quot;&#x2F;&gt;
+    &lt;&#x2F;view&gt;
+&lt;&#x2F;templete&gt;
+&lt;script&gt;
+import wepy from &quot;wepy&quot;
+import Child from &quot;.&#x2F;child&quot;
+
+export default class Parent extends wepy.component {
+    components = {
+        Child
+    }
+
+    data = {
+        someData: &quot;something&quot;
+    }
+}
+&lt;&#x2F;script&gt;
+
+&#x2F;&#x2F; child.wpy
+&lt;templete&gt;
+    &lt;view&gt;
+        &lt;Descendant :prop.sync=&quot;someData&quot;&#x2F;&gt;
+    &lt;&#x2F;view&gt;
+&lt;&#x2F;templete&gt;
+&lt;script&gt;
+import wepy from &quot;wepy&quot;
+import Descendant from &quot;.&#x2F;child&quot;
+
+export default class Child extends wepy.component {
+    components = {
+        Descendant
+    }
+
+    props = {
+        someData: String
+    }
+}
+&lt;&#x2F;script&gt;
+
+&#x2F;&#x2F; descendant.wpy
+&lt;templete&gt;
+    &lt;view&gt;
+        &lt;view&gt;\{\{someData}}&lt;&#x2F;view&gt;
+    &lt;&#x2F;view&gt;
+&lt;&#x2F;templete&gt;
+&lt;script&gt;
+import wepy from &quot;wepy&quot;
+
+export default class Descendant extends wepy.component {
+    props = {
+        someData: String
+    }
+}
+&lt;&#x2F;script&gt;</code></pre>
+解决这个问题没有什么好的办法, redux可能能够解决, 还有就是, 不使用多重嵌套. 我使用wepy的经验告诉我, 最好不要组件套组件, 所有的组件都直接写在page里面, 使用page的data来控制数据流动, 这样的话, 也能解决由于组件生命周期不完全的部分问题. <strong>在wepy中, 组件是没有onShow, onHide的生命周期的</strong>, 所以使用页面来管理数据，是一种比较好的方法,比如下面的例子.<pre><code>&#x2F;&#x2F; index.wpy
+&lt;templete&gt;
+    &lt;view&gt;
+        &lt;Child1 :prop.sync=&quot;message1&quot; :onTap=&quot;onTap1&quot;&#x2F;&gt;
+        &lt;Child2 :prop.sync=&quot;message2&quot; :onTap=&quot;onTap2&quot;&#x2F;&gt;
+        &lt;Child3 :prop.sync=&quot;message3&quot; :onTap=&quot;onTap3&quot;&#x2F;&gt;
+    &lt;&#x2F;view&gt;
+&lt;&#x2F;templete&gt;
+&lt;script&gt;
+import wepy from &quot;wepy&quot;
+import Child from &quot;.&#x2F;child&quot;
+
+export default class Index extends wepy.page {
+    components = {
+        Child1: Child,
+        Child2: Child,
+        Child3: Child
+    }
+
+    data = {
+        message1: &quot;&quot;,
+        message2: &quot;&quot;,
+        message3: &quot;&quot;,
+        onTap1: (event) =&gt; {
+            this.message1 = &quot;1&quot;            
+            this.$apply()
+        },
+        onTap2: (event) =&gt; {
+            this.message2 = &quot;2&quot;
+            this.$apply()
+        },
+        onTap3: (event) =&gt; {
+            this.message3 = &quot;3&quot;
+            this.$apply()
+        },
+        timer: &quot;&quot;
+    }
+
+    onShow: () =&gt; {
+        this.timer = setInterval(() =&gt; {
+            wx.request({
+                url: &quot;example.com&quot;,
+                success: (res) =&gt; {
+                    this.message1 = res.data[1]
+                    this.message2 = res.data[2]
+                    this.message3 = res.data[3]
+                    this.$apply()
+                }
+            })
+        }, 3000)
+        this.$apply()
+    }
+
+    onHide: () =&gt; {
+        clearInterval(this.timer)
+    }
+}
+&lt;&#x2F;script&gt;
+
+&#x2F;&#x2F; child.wpy
+&lt;templete&gt;
+    &lt;view&gt;
+        &lt;view @tap=&quot;bindTap&quot;&gt;\{\{message}}&lt;&#x2F;view&gt;
+    &lt;&#x2F;view&gt;
+&lt;&#x2F;templete&gt;
+&lt;script&gt;
+import wepy from &quot;wepy&quot;
+import Descendant from &quot;.&#x2F;child&quot;
+
+export default class Child extends wepy.component {
+    components = {
+        Descendant
+    }
+
+    props = {
+        someData: String,
+        onTap: Function
+    }
+
+    methods = {
+        bindTap: (event) =&gt; {
+            if (this.onTap) {
+                this.onTap(event)
+            }
+        }
+    }
+}
+&lt;&#x2F;script&gt;
+</code></pre>
+这个例子中, 使用页面来管理数据, 能够根据页面的隐藏与显示来决定是否请求刷新数据. <strong>同时还有一个要注意的点,就是这个例子中的子组件绑定事件处理函数的方法,从props得到的是数据(函数),是无法直接绑定到事件处理函数的,必须得在methods(注意这里有s)中声明才能绑定,否则是不会起作用的</strong></li>
+</ol>
+<ol>
+<li><p>编译生成文件过大的问题. wepy编译文件采取的是覆盖的策略, 如果你在源码中删除了一些文件, 编译生成的文件中还是会存在. 如果你想要缩小体积, 删除编译生成的文件, 删除.wepycache后重新编译. 压缩代码时将wepyconfig中的prod改为true就会压缩代码.</p>
+</li>
+<li><p>编译出错的问题. 在开发者工具的报错的代码中如果发现了生成的代码有未编译的属性, 如.once, .sync, 说明wepy编译出了问题, 后面的编译可能都没有完成. 有时候编译错误实在无法解决的话, 最好的办法是用git回到上一个版本(确实出现过几次非常奇怪的编译错误, 修改来修改去都无法解决, 最后还是回滚代码)</p>
+</li>
+</ol>
+<h2 id="微信大赛总结"><a href="#微信大赛总结" class="headerlink" title="微信大赛总结"></a>微信大赛总结</h2><h3 id="需求与开发的问题"><a href="#需求与开发的问题" class="headerlink" title="需求与开发的问题"></a>需求与开发的问题</h3><p>记得之前看&lt;代码大全&gt;的时候, 上面一直提到前期准备的重要性, 当时觉得有点夸张, 现在看来, 在软件开发的时候, 前期准备是非常重要的. 这次比赛我们的需求在后期甚至还有些变动, 整个流程在前期准备时没有形成书面化的文档, 前后端接口的文档也存在部分问题, 以致于前后端对于整个需求的理解不同, 到了后期一直在修改代码. 下次遇到项目时, 可以试着首先就分析需求, 将需求, 业务流程, 前后端接口, 形成完整的书面化的文档, 确定开发者对于业务的需求, 流程到达一致的理解, 最终再进行编写代码, 可能会效果好一点. 同时在设计数据库的时候, 应该要考虑到数据的规模, 提前做好做出优化的准备, 不然到后期进行更改操作数据库的代码也比较麻烦.(&lt;代码大全&gt;有时间还是得看一看)</p>
+<h3 id="文档与视频"><a href="#文档与视频" class="headerlink" title="文档与视频"></a>文档与视频</h3><p>这次比赛做的<a href="https://v.qq.com/x/page/h068154pz45.html" target="_blank" rel="noopener">视频</a>效果还不错, 文档也写的不错(都是队友的功劳), 之前也确实知道这些能够表现出功能的东西还是非常重要的, 但是没有掌握相关的技能, 以后还是得慢慢学习.</p>
+
+        
+                <blockquote style="margin: 2em 0 0;padding: 0.5em 1em;border-left: 3px solid #F44336;background-color: #F5F5F5;list-style: none;">
+                    <p><strong>
+                         
+                            CC4.0
+                        </strong>
+                        <br>
+                        <strong>本文链接：</strong><a href="https://zackbee.cn/2018/06/12/微信小程序开发以及微信小程序大赛总结/">https://zackbee.cn/2018/06/12/微信小程序开发以及微信小程序大赛总结/</a>
+                    </p>
+                </blockquote>
+        
+    
+
+    
+</div>
+
+
+                
+
+                <!-- Post Comments -->
+                
+                    
+                
+            </div>
+
+            <!-- Post Prev & Next Nav -->
+            <nav class="material-nav mdl-color-text--grey-50 mdl-cell mdl-cell--12-col">
+    <!-- Prev Nav -->
+    
+        <a href="/2018/07/27/read-redux/" id="post_nav-newer" class="prev-content">
+            <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
+                <i class="material-icons">arrow_back</i>
+            </button>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            新篇
+        </a>
+    
+
+    <!-- Section Spacer -->
+    <div class="section-spacer"></div>
+
+    <!-- Next Nav -->
+    
+        <a href="/2018/04/01/summary-of-exam/" id="post_nav-older" class="next-content">
+            旧篇
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
+                <i class="material-icons">arrow_forward</i>
+            </button>
+        </a>
+    
+</nav>
+
+        </div>
+    </div>
+
+
+
+                    
+                        <!-- Overlay For Active Sidebar -->
+<div class="sidebar-overlay"></div>
+
+<!-- Material sidebar -->
+<aside id="sidebar" class="sidebar sidebar-colored sidebar-fixed-left" role="navigation">
+    <div id="sidebar-main">
+        <!-- Sidebar Header -->
+        <div class="sidebar-header header-cover" style="background-image: url(/img/sidebar_header.png);">
+    <!-- Top bar -->
+    <div class="top-bar"></div>
+
+    <!-- Sidebar toggle button -->
+    <button type="button" class="sidebar-toggle mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" style="display: initial;" data-upgraded=",MaterialButton,MaterialRipple">
+        <i class="material-icons">clear_all</i>
+        <span class="mdl-button__ripple-container">
+            <span class="mdl-ripple">
+            </span>
+        </span>
+    </button>
+
+    <!-- Sidebar Avatar -->
+    <div class="sidebar-image">
+        <img src="/img/pig.jpg" alt="zackbee's avatar">
+    </div>
+
+    <!-- Sidebar Email -->
+    <a data-toggle="dropdown" class="sidebar-brand" href="#settings-dropdown">
+        zackbee.geek@gmail.com
+        <b class="caret"></b>
+    </a>
+</div>
+
+
+        <!-- Sidebar Navigation  -->
+        <ul class="nav sidebar-nav">
+    <!-- User dropdown  -->
+    <li class="dropdown">
+        <ul id="settings-dropdown" class="dropdown-menu">
+            
+                <li>
+                    <a href="mailto:zackbee.geek@gmail.com" target="_blank" title="Email Me">
+                        
+                            <i class="material-icons sidebar-material-icons sidebar-indent-left1pc-element">email</i>
+                        
+                        Email Me
+                    </a>
+                </li>
+            
+        </ul>
+    </li>
+
+    <!-- Homepage -->
+    
+        <li id="sidebar-first-li">
+            <a href="/">
+                
+                    <i class="material-icons sidebar-material-icons">home</i>
+                
+                主页
+            </a>
+        </li>
+        
+    
+
+    <!-- Archives  -->
+    
+        <li class="dropdown">
+            <a href="#" class="ripple-effect dropdown-toggle" data-toggle="dropdown">
+                
+                    <i class="material-icons sidebar-material-icons">inbox</i>
+                
+                    归档
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+            <li>
+                <a class="sidebar_archives-link" href="/archives/2019/08/">八月 2019<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/archives/2019/05/">五月 2019<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/archives/2018/10/">十月 2018<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/archives/2018/09/">九月 2018<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/archives/2018/07/">七月 2018<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/archives/2018/06/">六月 2018<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/archives/2018/04/">四月 2018<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/archives/2018/03/">三月 2018<span class="sidebar_archives-count">1</span></a>
+            </ul>
+        </li>
+        
+    
+
+    <!-- Categories  -->
+    
+        <li class="dropdown">
+            <a href="#" class="ripple-effect dropdown-toggle" data-toggle="dropdown">
+                
+                    <i class="material-icons sidebar-material-icons">chrome_reader_mode</i>
+                
+                分类
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+                <li>
+                <a class="sidebar_archives-link" href="/categories/总结/">总结<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/categories/教程/">教程<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/categories/胡思乱想/">胡思乱想<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/categories/阅读/">阅读<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/categories/阅读源码/">阅读源码<span class="sidebar_archives-count">3</span></a>
+            </ul>
+        </li>
+        
+    
+
+    <!-- Pages  -->
+    
+
+    <!-- Article Number  -->
+    
+        <li>
+            <a href="/archives">
+                文章总数
+                <span class="sidebar-badge">9</span>
+            </a>
+        </li>
+        
+    
+</ul>
+
+
+        <!-- Sidebar Footer -->
+        <!--
+I'm glad you use this theme, the development is no so easy, I hope you can keep the copyright, I will thank you so much.
+If you still want to delete the copyrights, could you still retain the first one? Which namely "Theme Material"
+It will not impact the appearance and can give developers a lot of support :)
+
+很高兴您使用并喜欢该主题，开发不易 十分谢谢与希望您可以保留一下版权声明。
+如果您仍然想删除的话 能否只保留第一项呢？即 "Theme Material"
+它不会影响美观并可以给开发者很大的支持和动力。 :)
+-->
+
+<!-- Sidebar Divider -->
+
+    <div class="sidebar-divider"></div>
+
+
+<!-- Theme Material -->
+
+
+<!-- Help & Support -->
+<!--
+
+-->
+
+<!-- Feedback -->
+<!--
+
+-->
+
+<!-- About Theme -->
+<!--
+
+-->
+
+    </div>
+
+    <!-- Sidebar Image -->
+    
+
+</aside>
+
+                    
+
+                    
+                        <!-- Footer Top Button -->
+                        <div id="back-to-top" class="toTop-wrap">
+    <a href="#top" class="toTop">
+        <i class="material-icons footer_top-i">expand_less</i>
+    </a>
+</div>
+
+                    
+
+                    <!--Footer-->
+<footer class="mdl-mini-footer" id="bottom">
+    
+        <!-- Paradox Footer Left Section -->
+        <div class="mdl-mini-footer--left-section sns-list">
+    <!-- Twitter -->
+    
+
+    <!-- Facebook -->
+    
+
+    <!-- Google + -->
+    
+
+    <!-- Weibo -->
+    
+
+    <!-- Instagram -->
+    
+
+    <!-- Tumblr -->
+    
+
+    <!-- Github -->
+    
+        <a href="https://github.com/Zack-Bee" target="_blank">
+            <button class="mdl-mini-footer--social-btn social-btn footer-sns-github">
+                <span class="visuallyhidden">Github</span>
+            </button><!--
+     --></a>
+    
+
+    <!-- LinkedIn -->
+    
+
+    <!-- Zhihu -->
+    
+
+    <!-- Bilibili -->
+    
+
+    <!-- Telegram -->
+    
+    
+    <!-- V2EX -->
+    
+</div>
+
+
+        <!--Copyright-->
+        <div id="copyright">
+            Copyright&nbsp;©&nbsp;2016&nbsp;-<script type="text/javascript">var fd = new Date();document.write("&nbsp;" + fd.getFullYear() + "&nbsp;");</script>zackbee的博客
+            
+        </div>
+
+        <!-- Paradox Footer Right Section -->
+
+        <!--
+        I am glad you use this theme, the development is no so easy, I hope you can keep the copyright.
+        It will not impact the appearance and can give developers a lot of support :)
+
+        很高兴您使用该主题，开发不易，希望您可以保留一下版权声明。
+        它不会影响美观并可以给开发者很大的支持。 :)
+        -->
+
+        <div class="mdl-mini-footer--right-section">
+            <div>
+                <div class="footer-develop-div">Powered by <a href="https://hexo.io" target="_blank" class="footer-develop-a">Hexo</a></div>
+                <div class="footer-develop-div">Theme - <a href="https://github.com/viosey/hexo-theme-material" target="_blank" class="footer-develop-a">Material</a></div>
+            </div>
+        </div>
+    
+</footer>
+
+
+                    <!-- Import JS File -->
+
+    <script>lsloader.load("lazyload_js","/js/lazyload.min.js?1BcfzuNXqV+ntF6gq+5X3Q==", true)</script>
+
+
+
+    <script>lsloader.load("js_js","/js/js.min.js?V/53wGualMuiPM3xoetD5Q==", true)</script>
+
+
+
+    <script>lsloader.load("np_js","/js/nprogress.js?pl3Qhb9lvqR1FlyLUna1Yw==", true)</script>
+
+
+<script type="text/ls-javascript" id="NProgress-script">
+    NProgress.configure({
+        showSpinner: true
+    });
+    NProgress.start();
+    $('#nprogress .bar').css({
+        'background': '#29d'
+    });
+    $('#nprogress .peg').css({
+        'box-shadow': '0 0 10px #29d, 0 0 15px #29d'
+    });
+    $('#nprogress .spinner-icon').css({
+        'border-top-color': '#29d',
+        'border-left-color': '#29d'
+    });
+    setTimeout(function() {
+        NProgress.done();
+        $('.fade').removeClass('out');
+    }, 800);
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- UC Browser Compatible -->
+<script>
+	var agent = navigator.userAgent.toLowerCase();
+	if(agent.indexOf('ucbrowser')>0) {
+		document.write('<link rel="stylesheet" href="/css/uc.css">');
+	   alert('由于 UC 浏览器使用极旧的内核，而本网站使用了一些新的特性。\n为了您能更好的浏览，推荐使用 Chrome 或 Firefox 浏览器。');
+	}
+</script>
+
+<!-- Import prettify js  -->
+
+    
+        
+            <script>lsloader.load("prettify_js","/js/prettify.min.js?WN07fivHQSMKWy7BmHBB6w==", true)</script>
+        
+    
+
+
+
+<!-- Window Load -->
+<!-- add class for prettify -->
+<script type="text/ls-javascript" id="window-load">
+    $(window).on('load', function() {
+        // Post_Toc parent position fixed
+        $('.post-toc-wrap').parent('.mdl-menu__container').css('position', 'fixed');
+    });
+
+    
+        
+            $(function() {
+                $('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+                prettyPrint();
+                })
+        
+    
+    
+</script>
+
+<!-- MathJax Load-->
+
+
+<!-- Bing Background -->
+
+
+<script type="text/ls-javascript" id="lazy-load">
+    // Offer LazyLoad
+    queue.offer(function(){
+        $('.lazy').lazyload({
+            effect : 'show'
+        });
+    });
+
+    // Start Queue
+    $(document).ready(function(){
+        setInterval(function(){
+            queue.execNext();
+        },200);
+    });
+</script>
+
+<!-- Custom Footer -->
+
+
+
+<script>
+    (function(){
+        var scriptList = document.querySelectorAll('script[type="text/ls-javascript"]')
+
+        for (var i = 0; i < scriptList.length; ++i) {
+            var item = scriptList[i];
+            lsloader.runInlineScript(item.id,item.id);
+        }
+    })()
+console.log('\n %c © Material Theme | Version: 1.5.2 | https://github.com/viosey/hexo-theme-material %c \n', 'color:#455a64;background:#e0e0e0;padding:5px 0;border-top-left-radius:5px;border-bottom-left-radius:5px;', 'color:#455a64;background:#e0e0e0;padding:5px 0;border-top-right-radius:5px;border-bottom-right-radius:5px;');
+</script>
+
+                </main>
+            </div>
+        </body>
+    
+</html>
