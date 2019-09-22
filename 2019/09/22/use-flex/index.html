@@ -43,7 +43,7 @@
     
     <title>
         
-            一块月饼引发的思考 | 
+            使用flex进行布局 | 
         
         zackbee的博客
     </title>
@@ -54,7 +54,7 @@
 
     <meta name="format-detection" content="telephone=no"/>
     <meta name="description" itemprop="description" content="zackbee的个人博客">
-    <meta name="keywords" content=",胡思乱想">
+    <meta name="keywords" content=",总结,CSS">
     <meta name="theme-color" content="#35baf6">
 
     <!-- Disable Fucking Bloody Baidu Tranformation -->
@@ -215,7 +215,7 @@
     <!-- WebAPP Icons -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="application-name" content="zackbee的博客">
-    <meta name="msapplication-starturl" content="https://zackbee.cn/2018/09/24/一块月饼引发的思考/">
+    <meta name="msapplication-starturl" content="https://zackbee.cn/2019/09/22/use-flex/">
     <meta name="msapplication-navbutton-color" content="#35baf6">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="zackbee的博客">
@@ -230,16 +230,16 @@
     
 
     <!-- The Open Graph protocol -->
-    <meta property="og:url" content="https://zackbee.cn/2018/09/24/一块月饼引发的思考/">
+    <meta property="og:url" content="https://zackbee.cn/2019/09/22/use-flex/">
     <meta property="og:type" content="blog">
-    <meta property="og:title" content="一块月饼引发的思考 | zackbee的博客">
+    <meta property="og:title" content="使用flex进行布局 | zackbee的博客">
     <meta property="og:image" content="/img/pig.jpg">
     <meta property="og:description" content="zackbee的个人博客">
-    <meta property="og:article:tag" content="胡思乱想"> 
+    <meta property="og:article:tag" content="总结"> <meta property="og:article:tag" content="CSS"> 
 
     
-        <meta property="article:published_time" content="Mon Sep 24 2018 15:34:39 GMT+0800">
-        <meta property="article:modified_time" content="Wed Aug 07 2019 21:40:25 GMT+0800">
+        <meta property="article:published_time" content="Sun Sep 22 2019 21:17:39 GMT+0800">
+        <meta property="article:modified_time" content="Mon Sep 23 2019 00:10:15 GMT+0800">
     
 
     <!-- The Twitter Card protocol -->
@@ -247,7 +247,7 @@
 
     <!-- Add canonical link for SEO -->
     
-        <link rel="canonical" href="https://zackbee.cn/2018/09/24/一块月饼引发的思考/index.html" />
+        <link rel="canonical" href="https://zackbee.cn/2019/09/22/use-flex/index.html" />
     
 
     <!-- Structured-data for SEO -->
@@ -259,10 +259,10 @@
 {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    "mainEntityOfPage": "https://zackbee.cn/2018/09/24/一块月饼引发的思考/index.html",
-    "headline": "一块月饼引发的思考",
-    "datePublished": "Mon Sep 24 2018 15:34:39 GMT+0800",
-    "dateModified": "Wed Aug 07 2019 21:40:25 GMT+0800",
+    "mainEntityOfPage": "https://zackbee.cn/2019/09/22/use-flex/index.html",
+    "headline": "使用flex进行布局",
+    "datePublished": "Sun Sep 22 2019 21:17:39 GMT+0800",
+    "dateModified": "Mon Sep 23 2019 00:10:15 GMT+0800",
     "author": {
         "@type": "Person",
         "name": "zackbee",
@@ -280,7 +280,7 @@
             "url": "/img/pig.jpg"
         }
     },
-    "keywords": ",胡思乱想",
+    "keywords": ",总结,CSS",
     "description": "zackbee的个人博客",
 }
 </script>
@@ -341,6 +341,15 @@
     <!-- Left aligned menu below button -->
     
     
+    <button id="post-toc-trigger-btn"
+        class="mdl-button mdl-js-button mdl-button--icon">
+        <i class="material-icons">format_list_numbered</i>
+    </button>
+
+    <ul class="post-toc-wrap mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" for="post-toc-trigger-btn" style="max-height:80vh; overflow-y:scroll;">
+        <ol class="post-toc"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#1-左右两栏右侧自适应"><span class="post-toc-number">1.</span> <span class="post-toc-text">1. 左右两栏右侧自适应</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#2-上下三栏中间自适应"><span class="post-toc-number">2.</span> <span class="post-toc-text">2. 上下三栏中间自适应</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#flex-item之间固定间距"><span class="post-toc-number">3.</span> <span class="post-toc-text">flex item之间固定间距</span></a></li></ol>
+    </ul>
+    
 
 
 
@@ -370,7 +379,7 @@
         
     
             <p class="article-headline-p">
-                一块月饼引发的思考
+                使用flex进行布局
             </p>
         </div>
 
@@ -389,7 +398,7 @@
     <!-- Author Name & Date -->
     <div>
         <strong>zackbee</strong>
-        <span>9月 24, 2018</span>
+        <span>9月 22, 2019</span>
     </div>
 
     <div class="section-spacer"></div>
@@ -413,7 +422,7 @@
     </button>
     <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="article-functions-viewtags-button">
         <li class="mdl-menu__item">
-        <a class="post_tag-link" href="/tags/胡思乱想/">胡思乱想</a>
+        <a class="post_tag-link" href="/tags/CSS/">CSS</a></li><li class="mdl-menu__item"><a class="post_tag-link" href="/tags/总结/">总结</a>
     </ul>
     
 
@@ -433,7 +442,7 @@
 
     <!-- Share Twitter -->
     
-        <a class="post_share-link" href="https://twitter.com/intent/tweet?text=一块月饼引发的思考&url=https://zackbee.cn/2018/09/24/一块月饼引发的思考/index.html&via=zackbee" target="_blank">
+        <a class="post_share-link" href="https://twitter.com/intent/tweet?text=使用flex进行布局&url=https://zackbee.cn/2019/09/22/use-flex/index.html&via=zackbee" target="_blank">
             <li class="mdl-menu__item">
                 分享到 Twitter
             </li>
@@ -442,7 +451,7 @@
 
     <!-- Share Facebook -->
     
-        <a class="post_share-link" href="https://www.facebook.com/sharer/sharer.php?u=https://zackbee.cn/2018/09/24/一块月饼引发的思考/index.html" target="_blank">
+        <a class="post_share-link" href="https://www.facebook.com/sharer/sharer.php?u=https://zackbee.cn/2019/09/22/use-flex/index.html" target="_blank">
             <li class="mdl-menu__item">
                 分享到 Facebook
             </li>
@@ -457,7 +466,7 @@
 
     <!-- Share QQ -->
     
-        <a class="post_share-link" href="http://connect.qq.com/widget/shareqq/index.html?site=zackbee的博客&title=一块月饼引发的思考&summary=zackbee的个人博客&pics=https://zackbee.cn/img/pig.jpg&url=https://zackbee.cn/2018/09/24/一块月饼引发的思考/index.html" target="_blank">
+        <a class="post_share-link" href="http://connect.qq.com/widget/shareqq/index.html?site=zackbee的博客&title=使用flex进行布局&summary=zackbee的个人博客&pics=https://zackbee.cn/img/pig.jpg&url=https://zackbee.cn/2019/09/22/use-flex/index.html" target="_blank">
             <li class="mdl-menu__item">
                 分享到 QQ
             </li>
@@ -466,7 +475,7 @@
 
     <!-- Share Telegram -->
     
-        <a class="post_share-link" href="https://telegram.me/share/url?url=https://zackbee.cn/2018/09/24/一块月饼引发的思考/index.html&text=一块月饼引发的思考" target="_blank">
+        <a class="post_share-link" href="https://telegram.me/share/url?url=https://zackbee.cn/2019/09/22/use-flex/index.html&text=使用flex进行布局" target="_blank">
             <li class="mdl-menu__item">
                 分享到 Telegram
             </li>
@@ -482,12 +491,89 @@
                 <!-- Post Content -->
                 <div id="post-content" class="mdl-color-text--grey-700 mdl-card__supporting-text fade out">
     
-        <p>今天是中秋节，早餐吃了室友给的一块蛋黄莲蓉月饼，吃了四分之三就感觉吃不下了，不禁让我十分意外，我记得以前我是很喜欢吃这种月饼的，初中亲戚送了一盒，那是我第一次吃这种月饼，香甜细腻的莲蓉，泛着油光的蛋黄，都让我觉得惊艳喜欢。 但是今天，蛋黄还是那个蛋黄，莲蓉还是那个莲蓉，月饼也还是那个月饼，但是我却没那么喜欢了。</p>
-<p>我又想起前几天和朋友谈论到以前看的小说，说到《斗罗大陆》和《斗破苍穹》，觉得那个时候的兴奋与惊艳之感是由于当时看的小说太少，没见识。小说也还是那些小说，套路也还是那些套路，但是现在也不再喜欢。我又记起看过的毕淑敏的散文，它们确实很温暖，但是现在却不能让我得到启迪与顿悟。我原本打算把这些归结于年少无知，就像我反思之前犯的错误也是因为年少无知。后来想了想，其实无知不一定是因为年少，年少也不一定是无知的理由，无知就是因为无知。</p>
-<p>那个时候的我们涉世未深，见过的世面太少，会因为第一次吃到的牛排而感到幸福满足，会觉得这世上的粽子应该都是甜的吧，会觉得天下最好吃的月饼是蛋黄莲蓉，最好吃的包子一定是来自靠近初中的那家天津包子铺。包子铺的老板娘在我领中考成绩单那天问我考得怎么样，我拿着四个豆沙包子笑着说还不错，然后转身走回了家。我还记得她笑得时候，脸上的褶皱像包子上褶皱一样，笑容比豆沙还要甜。以前见过的人很少，所以我们对很多人都印象深刻。你会记得暴雨天背着你趟过水洼的少年，你也会记得帮你抄过入团申请书的少女，你会记得因为你的骄傲而批评过你的班主任，你也会记得那个开朗明亮的女同桌。那个时候的男孩们见过的女孩太少，可能因为她们活泼可爱的性格而觉得喜欢，可能因为她们美丽动人的外表而觉得喜欢，也可能因为她们在路上不小心踩了你的鞋而觉得喜欢，就是这么莫名其妙。那个时候的男孩们，在青春期荷尔蒙的刺激下开始带着好奇与新鲜感走向女孩，将自己代入那美好的故事，以为自己是故事的男主角，而路上的任何一个路人乙，都有可能是自己的真命天女。</p>
-<p>后来的我吃过了很多次牛排，知道这个世界上除了甜粽子还有咸味的粽子，也会因为吃过了太多次蛋黄莲蓉月饼而觉得发腻，原来最好吃的包子不一定是街头那一家。我也见过很多人，在熙熙攘攘的人群中与他们擦肩而过，在人生的路途中先后奔向天南海北。我再很难因为女孩性格活泼可爱而心动，你看，小红很活泼可爱，小丽也很活泼可爱，这世上活泼可爱的那么多，为什么一定就是你的路人乙呢。后来我再想想，我们那个时候的心跳加速，那个时候的寝食难安，是不是真的因为是心动呢，还是因为见过的人太少。我不清楚，也还没想明白，想必在中秋节这一天也想不明白了。那个时候的牛排、蛋黄莲蓉月饼、包子，是不是真的那么好吃呢，我也不清楚。而我最近这几天怀念的武汉街头的梅花糕，我也无从得知是否真的像我第一次吃的那样惊艳，因为我再也没有遇到过。</p>
-<p>我们慢慢地成长，虽然不算见多识广，但是比起最初的自己看的人和事物都多得多了。我虽然常常在反思，嘲笑以前的自己，对以前做的蠢事而哑然失笑，但是我不会去抨击或是嘲笑以前我接触的事物。你看唐家三少和天蚕土豆写的小说虽然都是那样的套路，但是《斗罗大陆》和《斗破苍穹》对于当时第一次接触的我们，也算是书海中的珍宝。你看当时在普通餐厅吃的牛排好歹也在很久的一段时间里是我幸福的源泉。你看毕淑敏写的散文，虽然现在再看不会那么喜欢了，但是当时确实一直在指引我前行，是那样的温暖。我们可能小时候一直会喜欢吃鸡蛋炒番茄，但是某一天我们突然不喜欢了，不喜欢了就是不喜欢了，你没错，鸡蛋炒番茄也没错。</p>
-<p>可能以后我反思自己的时候会觉得今天写下的这段文字幼稚可笑，但是这就是我此时此刻因为一块月饼而引发的思考，它真实，有力地描述了一个大三老狗在中秋节这天的所思所想。</p>
+        <p>如果不考虑浏览器的兼容性，很多情况下我们可以使用flex完成常见的布局布局。<br>下面为我在实习期间对使用flex布局的归纳总结。(flex的默认值: 0 1 auto)</p>
+<h3 id="1-左右两栏右侧自适应"><a href="#1-左右两栏右侧自适应" class="headerlink" title="1. 左右两栏右侧自适应"></a>1. 左右两栏右侧自适应</h3><p>左侧设定数值，右侧使用flex-grow来吸收多余空间</p>
+<pre><code>[left] [right]
+</code></pre><pre class="line-numbers language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>container<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>left<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>right<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-css"><code class="language-css"><span class="token selector"><span class="token class">.container</span> </span><span class="token punctuation">{</span>
+  <span class="token property">display</span><span class="token punctuation">:</span> flex<span class="token punctuation">;</span>
+  <span class="token property">width</span><span class="token punctuation">:</span> <span class="token number">100</span>vw<span class="token punctuation">;</span>
+  <span class="token property">height</span><span class="token punctuation">:</span> <span class="token number">100</span>vh<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token selector"><span class="token class">.left</span> </span><span class="token punctuation">{</span>
+  <span class="token property">width</span><span class="token punctuation">:</span> <span class="token number">100</span>px<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token selector"><span class="token class">.right</span> </span><span class="token punctuation">{</span>
+  <span class="token property">flex</span><span class="token punctuation">:</span> auto<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="2-上下三栏中间自适应"><a href="#2-上下三栏中间自适应" class="headerlink" title="2. 上下三栏中间自适应"></a>2. 上下三栏中间自适应</h3><p>使用flex-direction: column改变flex主轴方向，使用flex-grow吸收多余空间</p>
+<pre><code>[top]
+
+[middle]
+
+[bottom]
+</code></pre><pre class="line-numbers language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>container<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>top<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>middle<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>bottom<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-css"><code class="language-css"><span class="token selector"><span class="token class">.container</span> </span><span class="token punctuation">{</span>
+  <span class="token property">display</span><span class="token punctuation">:</span> flex<span class="token punctuation">;</span>
+  <span class="token property">width</span><span class="token punctuation">:</span> <span class="token number">100</span>vw<span class="token punctuation">;</span>
+  <span class="token property">height</span><span class="token punctuation">:</span> <span class="token number">100</span>vh<span class="token punctuation">;</span>
+  <span class="token property">flex-direction</span><span class="token punctuation">:</span> cloumn<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token selector"><span class="token class">.top</span> </span><span class="token punctuation">{</span>
+  <span class="token property">height</span><span class="token punctuation">:</span> <span class="token number">100</span>px<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token selector"><span class="token class">.middle</span> </span><span class="token punctuation">{</span>
+  <span class="token property">flex</span><span class="token punctuation">:</span> auto<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token selector"><span class="token class">.bottom</span> </span><span class="token punctuation">{</span>
+  <span class="token property">height</span><span class="token punctuation">:</span> <span class="token number">100</span>px<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>使用如上两种方法的原理排列组合可以完成很多布局。</p>
+<p>注意： flex item是能够感知自身尺寸的，仿佛设置了width&amp;height一样，如果想要出现滚动条，则对自适应的flex item设置overflow相关属性。如果想要在多层嵌套中让子元素text-overflow: ellipsis生效的话，理解这一点尤为重要。</p>
+<p>以左右两栏举例</p>
+<pre><code>[left] [right]
+</code></pre><pre class="line-numbers language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>container<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>left<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>right<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>text<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>若想在div.text元素显示出超出文字省略号的效果，则需在能够影响到div.test计算宽度且能够感知自身宽度的的祖先元素中设置overflow-x: hidden来控制div.text的大小。</p>
+<h3 id="flex-item之间固定间距"><a href="#flex-item之间固定间距" class="headerlink" title="flex item之间固定间距"></a>flex item之间固定间距</h3><p>由于目前flex不支持固定间距(gap)，那么我们该怎么实现这个需求，答案使用margin或者padding将间距撑开，在容器组件设置负值margin来吃掉间距。</p>
+<pre><code>[item1] [item2] [item3] [item4]
+</code></pre><pre class="line-numbers language-css"><code class="language-css"><span class="token selector"><span class="token class">.container</span> </span><span class="token punctuation">{</span>
+  <span class="token property">display</span><span class="token punctuation">:</span> flex<span class="token punctuation">;</span>
+  <span class="token property">width</span><span class="token punctuation">:</span> <span class="token number">100</span>vw<span class="token punctuation">;</span>
+  <span class="token property">height</span><span class="token punctuation">:</span> <span class="token number">100</span>vh<span class="token punctuation">;</span>
+  <span class="token property">flex-direction</span><span class="token punctuation">:</span> cloumn<span class="token punctuation">;</span>
+  <span class="token property">margin-right</span><span class="token punctuation">:</span> -<span class="token number">50</span>px<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token selector"><span class="token class">.item</span> </span><span class="token punctuation">{</span>
+  <span class="token property">margin-right</span><span class="token punctuation">:</span> <span class="token number">50</span>px<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
         
                 <blockquote style="margin: 2em 0 0;padding: 0.5em 1em;border-left: 3px solid #F44336;background-color: #F5F5F5;list-style: none;">
@@ -496,7 +582,7 @@
                             CC4.0
                         </strong>
                         <br>
-                        <strong>本文链接：</strong><a href="https://zackbee.cn/2018/09/24/一块月饼引发的思考/">https://zackbee.cn/2018/09/24/一块月饼引发的思考/</a>
+                        <strong>本文链接：</strong><a href="https://zackbee.cn/2019/09/22/use-flex/">https://zackbee.cn/2019/09/22/use-flex/</a>
                     </p>
                 </blockquote>
         
@@ -518,21 +604,13 @@
             <nav class="material-nav mdl-color-text--grey-50 mdl-cell mdl-cell--12-col">
     <!-- Prev Nav -->
     
-        <a href="/2018/10/02/使用ngxin-rtmp搭建直播服务/" id="post_nav-newer" class="prev-content">
-            <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
-                <i class="material-icons">arrow_back</i>
-            </button>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            新篇
-        </a>
-    
 
     <!-- Section Spacer -->
     <div class="section-spacer"></div>
 
     <!-- Next Nav -->
     
-        <a href="/2018/09/03/read-react-transition-group/" id="post_nav-older" class="next-content">
+        <a href="/2019/08/17/review-redux-and-write-middleware/" id="post_nav-older" class="next-content">
             旧篇
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
